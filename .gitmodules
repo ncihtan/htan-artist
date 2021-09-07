@@ -1,0 +1,3 @@
+[submodule "auto-minerva"]
+	path = auto-minerva
+	url = https://github.com/jmuhlich/auto-minerva.git
