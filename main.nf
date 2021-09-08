@@ -12,7 +12,7 @@ view_ch.view()
 input_ch_ome
   .branch {
       ome: ~/.+\.ome\.tif{1,2}$/
-      other: true
+      other: false
     }
     .set { input_groups }
 
