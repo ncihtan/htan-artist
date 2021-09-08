@@ -1,6 +1,8 @@
 #!/usr/bin/env nextflow
 
-ome_ch = Channel.fromPath('~/miniature/data/*{.ome.tiff,.ome.tif,svs,.tif,.tiff}')
+Channel
+  .fromPath('~/miniature/data/*{.ome.tiff,.ome.tif,svs,.tif,.tiff}')
+  .into { ome_story_ch, ome_pyramid_ch}
 //not_ome_ch = Channel.fromPath('~/miniature/data/*{.svs,.tif,.tiff}')
 
 
@@ -21,7 +23,7 @@ ome_ch = Channel.fromPath('~/miniature/data/*{.ome.tiff,.ome.tif,svs,.tif,.tiff}
 
 process make_story{
   input:
-    path ome from ome_ch
+    path ome from ome_story_ch
   output:
     path '*.story.json' into story_ch
   script:
@@ -33,7 +35,7 @@ process make_story{
 process render_pyramid{
   conda 'minerva-author/requirements.yml scikit-image zarr'
   input:
-    path ome from ome_ch
+    path ome from ome_pyramid_ch
     path story from story_ch
   output:
     path '*_minerva' into ch_final
