@@ -35,7 +35,7 @@ process make_story{
   output:
     set name, file('${name}.story.json') into story_ch
   """
-  python $projectDir/auto-minerva/story.py $ome
+  python $projectDir/auto-minerva/story.py $ome > '${name}.story.json'
   """
 }
 
