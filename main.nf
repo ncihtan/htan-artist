@@ -1,10 +1,10 @@
 #!/usr/bin/env nextflow
 
 params.outdir = '.'
-
+params.input = '/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif'
 
 Channel
-  .fromPath('/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif')
+  .fromPath(params.input)
   .map { file -> tuple(file.simpleName, file) }
   .into { ome_story_ch; ome_view; ome_pyramid_ch }
 
