@@ -24,7 +24,7 @@ ome_view.view()
 //}
 
 process make_story{
-  conda '/home/ubuntu/anaconda3/auto-minerva-author-env'
+  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author-env'
   echo true
   input:
     path ome from ome_story_ch
