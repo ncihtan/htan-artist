@@ -2,7 +2,7 @@
 
 Channel
   .fromPath('/home/ubuntu/miniature/data/*.ome.tif')
-  .into { ome_story_ch; ome_pyramid_ch; ome_view }
+  .into { ome_story_ch; ome_view }
 
 ome_view.view()
 //not_ome_ch = Channel.fromPath('~/miniature/data/*{.svs,.tif,.tiff}')
@@ -30,7 +30,7 @@ process make_story{
     path ome from ome_story_ch
   output:
     path '*.story.json' into story_ch
-
+    path ome into ome_pyramid ch
   """
   python $projectDir/auto-minerva/story.py $ome > 'story.json'
   """
