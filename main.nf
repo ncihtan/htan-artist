@@ -31,7 +31,7 @@ process make_story{
     path '*.story.json' into story_ch
   script:
   """
-  python auto-minerva/story.py {$ome} > 'story.json'
+  python $projectDir/auto-minerva/story.py $ome > 'story.json'
   """
 }
 
@@ -45,6 +45,6 @@ process render_pyramid{
     path '*_minerva' into ch_final
   script:
     """
-    python  minerva-author/src/save_exhibit_pyramid.py" $ome $story
+    python  $projectDir/minerva-author/src/save_exhibit_pyramid.py" $ome $story
     """
 }
