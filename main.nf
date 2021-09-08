@@ -5,7 +5,7 @@ params.input = '/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif'
 
 Channel
   .fromPath(params.input)
-  .into {input_ch, view_ch}
+  .into {input_ch; view_ch}
 
 view_ch.view()
 
