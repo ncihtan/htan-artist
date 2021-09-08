@@ -6,7 +6,7 @@ params.input = '/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif'
 Channel
   .fromPath(params.input)
   .map { file -> tuple(file.simpleName, file) }
-  .into { ome_story_ch; ome_view; ome_pyramid_ch }
+  .into { ome_story_ch; ome_view; ome_pyramid_ch; ome_miniature_ch }
 
 ome_view.view()
 //not_ome_ch = Channel.fromPath('~/miniature/data/*{.svs,.tif,.tiff}')
@@ -53,5 +53,19 @@ process render_pyramid{
     """
     python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
     cp $projectDir/resources/index.html minerva
+    """
+}
+
+process render_miniature{
+  publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
+  echo true
+  conda '/home/ubuntu/anaconda3/envs/miniature'
+  input:
+    set name, file(ome) from ome_miniature_ch
+  output:
+    file '*'
+
+    """
+    python  $projectDir/miniature/docker/paint-miniature.py $ome 'miniature.png'
     """
 }
