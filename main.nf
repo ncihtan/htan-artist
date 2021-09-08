@@ -52,6 +52,6 @@ process render_pyramid{
     file 'minerva' into ch_final
 
     """
-    python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story '${name}_minerva'
+    python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
     """
 }
