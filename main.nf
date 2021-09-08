@@ -31,7 +31,7 @@ process make_ometiff{
   """
 }
 
-ome_ch.
+ome_ch
   .mix(converted_ch)
   .into { ome_story_ch; ome_pyramid_ch }
 
