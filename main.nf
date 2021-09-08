@@ -46,7 +46,7 @@ process render_pyramid{
     path ome from ome_pyramid_ch
     path story from story_ch
   output:
-    path('${ome.baseName}_minerva') into ch_final
+    file '${ome.baseName}_minerva' into ch_final
 
     """
     python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story '${ome.baseName}_minerva'
