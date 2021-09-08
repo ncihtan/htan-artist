@@ -30,7 +30,7 @@ process make_story{
     path ome from ome_story_ch
   output:
     path '*.story.json' into story_ch
-    path '*' into ome_pyramid ch
+    path '*.ome.tif' into ome_pyramid ch
   """
   python $projectDir/auto-minerva/story.py $ome > 'story.json'
   """
