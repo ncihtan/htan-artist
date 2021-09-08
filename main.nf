@@ -64,9 +64,10 @@ process render_miniature{
   input:
     set name, file(ome) from ome_miniature_ch
   output:
-    file '*'
+    file 'data/*'
 
     """
+    mkdir data
     python  $projectDir/miniature/docker/paint_miniature.py $ome 'miniature.png'
     """
 }
