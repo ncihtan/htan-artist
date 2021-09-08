@@ -14,14 +14,14 @@ input_ch_ome
       ome: ~/\.ome\.tif{1,2}$/
       other: true
     }
-    .into { input_group, view_groups }
+    .into { input_group; view_groups }
 
-view_groups.ome.view { "$it is an ometiff"}
-view_groups.other.view { "$it is NOT an ometiff"}
+view_groups.ome.view { "$it is an ometiff" }
+view_groups.other.view { "$it is NOT an ometiff" }
 
 input_groups.ome
   .map { file -> tuple(file.simpleName, file) }
-  .into {ome_ch, ome_view_ch}
+  .into {ome_ch; ome_view_ch}
 
 ome_view_ch.view()
 
