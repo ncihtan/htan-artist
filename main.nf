@@ -11,8 +11,8 @@ view_ch.view()
 
 input_ch_ome
   .branch {
-      ome: ~/.+\.ome\.tif{1,2}$/
-      other: false
+      ome: it ~/.+\.ome\.tif{1,2}$/
+      other: true
     }
     .set { input_groups }
 
