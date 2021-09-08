@@ -14,24 +14,19 @@ input_ch_ome
       ome: ~/\.ome\.tif{1,2}$/
       other: true
     }
-    .set { branch_res }
-
-branch_res.into{input_groups; view_groups}
-
-view_groups.ome.view { "$it is an ometiff" }
-view_groups.other.view { "$it is NOT an ometiff" }
+    .set { input_groups }
 
 input_groups.ome
   .map { file -> tuple(file.simpleName, file) }
   .into {ome_ch; ome_view_ch}
 
-ome_view_ch.view()
+ome_view_ch.view { "$it is an ometiff" }
 
 input_groups.other
   .map { file -> tuple(file.simpleName, file) }
   .into {bf_convert_ch; bf_view_ch}
 
-bf_view_ch.view()
+bf_view_ch.view { "$it is NOT an ometiff" }
 
 process make_ometiff{
   input:
