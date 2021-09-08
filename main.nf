@@ -1,8 +1,8 @@
 #!/usr/bin/env nextflow
 
 input_ch = Channel.fromPath('~/miniature/data/*{.ome.tiff,.ome.tif,svs,.tif,.tiff}')
-ome_ch = input_ch.filter(~/{.ome.tiff,.ome.tif}$/)
-not_ome_ch = input_ch.filter(~/{.tif,.tiff,.svs}$/)
+ome_ch = input_ch.filter(~/\.ome\.tif{1,2}$/)
+not_ome_ch = input_ch.filter(~/^((?!\.ome\.tif{1,2}).)*$/)
 
 process make_ometiff{
   input:
