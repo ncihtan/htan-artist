@@ -24,7 +24,7 @@ ome_view.view()
 //}
 
 process make_story{
-  conda '{$projectDir}/auto-minerva-author-env.yml'
+  conda '/home/ubuntu/auto-minerva/auto-minerva-author-env.yml'
   echo true
   input:
     path ome from ome_story_ch
@@ -38,7 +38,7 @@ process make_story{
 
 process render_pyramid{
   echo true
-  conda '{$projectDir}/minerva-author/requirements.yml scikit-image zarr'
+  conda '/home/ubuntu/auto-minerva/auto-minerva-author-env.yml'
   input:
     path ome from ome_pyramid_ch
     path story from story_ch
