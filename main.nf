@@ -29,6 +29,7 @@ input_groups.other
 bf_view_ch.view { "$it is NOT an ometiff" }
 
 process make_ometiff{
+  conda 'ome bioformats2raw raw2ometiff'
   input:
     set val(name), file(input) from bf_convert_ch
 
@@ -38,7 +39,7 @@ process make_ometiff{
   script:
   """
   bioformats2raw {$input} 'raw_dir'
-  raw2bioformats 'raw_dir' "${name}.ome.tiff"
+  raw2ometiff 'raw_dir' "${name}.ome.tiff"
   """
 }
 
