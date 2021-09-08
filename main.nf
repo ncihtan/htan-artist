@@ -52,6 +52,6 @@ process render_pyramid{
 
     """
     python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
-    cp $projectDir/resources/index.html, minerva
+    cp $projectDir/resources/index.html minerva
     """
 }
