@@ -31,9 +31,9 @@ process make_story{
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   echo true
   input:
-    set name path(ome) from ome_story_ch
+    set name, file(ome) from ome_story_ch
   output:
-    set name file('${name}.story.json') into story_ch
+    set name, file('${name}.story.json') into story_ch
   """
   python $projectDir/auto-minerva/story.py $ome
   """
@@ -44,9 +44,9 @@ process render_pyramid{
   echo true
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
-    set name path(ome) from ome_pyramid_ch
-    path story from story_ch
-    path('${name}_minerva') into output_ch
+    set name, file(ome) from ome_pyramid_ch
+    file story from story_ch
+    file('${name}_minerva') into output_ch
 
     """
     python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story '${name}_minerva'
