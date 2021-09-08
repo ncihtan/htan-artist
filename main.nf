@@ -24,6 +24,7 @@ ome_view.view()
 //}
 
 process make_story{
+  conda 'auto-minerva-author-env.yml'
   echo true
   input:
     path ome from ome_story_ch
