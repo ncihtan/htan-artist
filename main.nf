@@ -22,7 +22,7 @@ process make_ometiff{
     set val(name), file(ome) from bf_convert_ch
 
   output:
-    set name, file "${name}.ome.tiff" into converted_ch
+    set name, file("${name}.ome.tiff") into converted_ch
 
   script:
   """
