@@ -1,5 +1,8 @@
 #!/usr/bin/env nextflow
 
+params.outdir = '.'
+
+
 Channel
   .fromPath('/home/ubuntu/miniature/data/*.ome.tif')
   .into { ome_story_ch; ome_view }
@@ -30,13 +33,14 @@ process make_story{
     path ome from ome_story_ch
   output:
     path('*.story.json') into story_ch
-    path('*') into ome_pyramid ch
+    path(ome) into ome_pyramid ch
   """
   python $projectDir/auto-minerva/story.py $ome > 'story.json'
   """
 }
 
 process render_pyramid{
+  publishDir "$params.outdir"
   echo true
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
