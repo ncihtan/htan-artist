@@ -2,7 +2,7 @@
 
 Channel
   .fromPath('~/miniature/data/*{.ome.tiff,.ome.tif,svs,.tif,.tiff}')
-  .into { ome_story_ch, ome_pyramid_ch }
+  .into { ome_story_ch; ome_pyramid_ch }
 //not_ome_ch = Channel.fromPath('~/miniature/data/*{.svs,.tif,.tiff}')
 
 
