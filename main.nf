@@ -4,7 +4,7 @@ params.outdir = '.'
 
 
 Channel
-  .fromPath('/home/ubuntu/miniature/data/*.ome.tif')
+  .fromPath('/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif')
   .into { ome_story_ch; ome_view; ome_pyramid_ch }
 
 ome_view.view()
