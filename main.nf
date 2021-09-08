@@ -9,16 +9,22 @@ Channel
 
 view_ch.view()
 
-input_ch_notome
-  .filter(~ /^(?!.*(\.ome\.tif{1,2}$))/)
+input_ch_ome
+  .branch(
+      ome: ~ /.*\.ome\.tif{1,2}$/
+      other: true
+    )
+    .set { input_groups}
+
+input_groups.ome
+  .map { file -> tuple(file.simpleName, file) }
+  .into {ome_ch}
+
+input_groups.other
   .map { file -> tuple(file.simpleName, file) }
   .into {bf_convert_ch; bf_view_ch}
 
 bf_view_ch.view()
-
-ome_ch = input_ch_ome
-  .filter(~ /.*\.ome\.tif{1,2}$/)
-  .map { file -> tuple(file.simpleName, file) }
 
 process make_ometiff{
   input:
