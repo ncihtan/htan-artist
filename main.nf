@@ -19,7 +19,7 @@ ome_ch = input_ch_ome
 
 process make_ometiff{
   input:
-    set name, file(ome) from bf_convert_ch
+    set val(name), file(ome) from bf_convert_ch
 
   output:
     set name, file "${name}.ome.tiff" into converted_ch
