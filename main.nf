@@ -16,7 +16,7 @@ input_ch_ome
     }
     .set { branch_res }
 
-branch_res.into{input_group; view_groups}
+branch_res.into{input_groups; view_groups}
 
 view_groups.ome.view { "$it is an ometiff" }
 view_groups.other.view { "$it is NOT an ometiff" }
