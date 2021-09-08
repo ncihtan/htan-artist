@@ -3,6 +3,7 @@
 params.outdir = '.'
 params.input = '/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif'
 
+
 Channel
   .fromPath(params.input)
   .map { file -> tuple(file.simpleName, file) }
@@ -66,6 +67,6 @@ process render_miniature{
     file '*'
 
     """
-    python  $projectDir/miniature/docker/paint-miniature.py $ome 'miniature.png'
+    python  $projectDir/miniature/docker/paint_miniature.py $ome 'miniature.png'
     """
 }
