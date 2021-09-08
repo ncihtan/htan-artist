@@ -46,6 +46,7 @@ process render_pyramid{
   input:
     set name, file(ome) from ome_pyramid_ch
     file story from story_ch
+  output:
     file '${name}_minerva' into ch_final
 
     """
