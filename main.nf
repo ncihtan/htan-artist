@@ -29,7 +29,7 @@ input_groups.other
 bf_view_ch.view { "$it is NOT an ometiff" }
 
 process make_ometiff{
-  conda 'ome bioformats2raw raw2ometiff'
+  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
     set val(name), file(input) from bf_convert_ch
 
