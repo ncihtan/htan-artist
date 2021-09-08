@@ -9,10 +9,13 @@ Channel
 
 view_ch.view()
 
-bf_convert_ch = input_ch_notome
+input_ch_notome
   .filter(~ /^(?!.*(\.ome\.tif{1,2}$))/)
   .map { file -> tuple(file.simpleName, file) }
+  .into {bf_convert_ch, bf_view_ch}
 
+bf_view_ch.view()
+  
 ome_ch = input_ch_ome
   .filter(~ /.*\.ome\.tif{1,2}$/)
   .map { file -> tuple(file.simpleName, file) }
