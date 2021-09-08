@@ -5,7 +5,7 @@ params.outdir = '.'
 
 Channel
   .fromPath('/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif')
-  .map { file -> tuple(file.baseName, file) }
+  .map { file -> tuple(file.baseName.baseName, file) }
   .into { ome_story_ch; ome_view; ome_pyramid_ch }
 
 ome_view.view()
@@ -29,25 +29,27 @@ ome_view.view()
 
 process make_story{
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
+  publishDir 'outputs', saveAs: {filname > "$name/story.json"}
   echo true
   input:
     set name, file(ome) from ome_story_ch
   output:
-    set name, file('${name}.story.json') into story_ch
+    set name, file('story.json') into story_ch
   """
-  python $projectDir/auto-minerva/story.py $ome > '${name}.story.json'
+  python $projectDir/auto-minerva/story.py $ome > 'story.json'
   """
 }
 
 process render_pyramid{
   publishDir "$params.outdir"
+  publishDir 'outputs', saveAs: {filname > "$name/minerva-story"}
   echo true
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
     set name, file(ome) from ome_pyramid_ch
     file story from story_ch
   output:
-    file '${name}_minerva' into ch_final
+    file 'minerva' into ch_final
 
     """
     python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story '${name}_minerva'
