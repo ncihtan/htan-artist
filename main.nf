@@ -37,7 +37,7 @@ process make_ometiff{
 
   script:
   """
-  bioformats2raw {$not_ome} 'raw_dir'
+  bioformats2raw {$name} 'raw_dir'
   raw2bioformats 'raw_dir' "${name}.ome.tiff"
   """
 }
