@@ -30,14 +30,14 @@ bf_view_ch.view { "$it is NOT an ometiff" }
 
 process make_ometiff{
   input:
-    set val(name), file(ome) from bf_convert_ch
+    set val(name), file(input) from bf_convert_ch
 
   output:
     set name, file("${name}.ome.tiff") into converted_ch
 
   script:
   """
-  bioformats2raw {$name} 'raw_dir'
+  bioformats2raw {$input} 'raw_dir'
   raw2bioformats 'raw_dir' "${name}.ome.tiff"
   """
 }
