@@ -29,8 +29,8 @@ process make_story{
   input:
     path ome from ome_story_ch
   output:
-    path '*.story.json' into story_ch
-    path '*.ome.tif' into ome_pyramid ch
+    path('*.story.json') into story_ch
+    path('*') into ome_pyramid ch
   """
   python $projectDir/auto-minerva/story.py $ome > 'story.json'
   """
@@ -43,7 +43,7 @@ process render_pyramid{
     path ome from ome_pyramid_ch
     path story from story_ch
   output:
-    path '*_minerva' into ch_final
+    path('*_minerva') into ch_final
 
     """
     python  $projectDir/minerva-author/src/save_exhibit_pyramid.py" $ome $story
