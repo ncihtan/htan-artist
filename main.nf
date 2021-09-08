@@ -47,7 +47,7 @@ process render_pyramid{
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
     set name, file(ome) from ome_pyramid_ch
-    set story_name file(story) from story_ch
+    set story_name, file(story) from story_ch
   output:
     file 'minerva' into ch_final
 
