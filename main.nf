@@ -14,7 +14,9 @@ input_ch_ome
       ome: ~/\.ome\.tif{1,2}$/
       other: true
     }
-    .into { input_group; view_groups }
+    .set { branch_res }
+
+branch_res.into{input_group; view_groups}
 
 view_groups.ome.view { "$it is an ometiff" }
 view_groups.other.view { "$it is NOT an ometiff" }
