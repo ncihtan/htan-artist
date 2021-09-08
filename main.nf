@@ -3,6 +3,8 @@
 Channel
   .fromPath('~/miniature/data/*{.ome.tiff,.ome.tif,svs,.tif,.tiff}')
   .into { ome_story_ch; ome_pyramid_ch }
+
+ome_story_ch.view()
 //not_ome_ch = Channel.fromPath('~/miniature/data/*{.svs,.tif,.tiff}')
 
 
@@ -22,6 +24,7 @@ Channel
 //}
 
 process make_story{
+  echo true
   input:
     path ome from ome_story_ch
   output:
@@ -33,6 +36,7 @@ process make_story{
 }
 
 process render_pyramid{
+  echo true
   conda 'minerva-author/requirements.yml scikit-image zarr'
   input:
     path ome from ome_pyramid_ch
