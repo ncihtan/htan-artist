@@ -48,7 +48,7 @@ process render_pyramid{
     set name, file(ome) from ome_pyramid_ch
     set story_name, file(story) from story_ch
   output:
-    file 'minerva' into ch_final
+    file '*'
 
     """
     python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
