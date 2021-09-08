@@ -10,10 +10,10 @@ Channel
 view_ch.view()
 
 input_ch_ome
-  .branch(
+  .branch {
       ome: ~ /.*\.ome\.tif{1,2}$/
       other: true
-    )
+    }
     .set { input_groups}
 
 input_groups.ome
