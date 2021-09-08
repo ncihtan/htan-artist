@@ -5,7 +5,7 @@ params.outdir = '.'
 
 Channel
   .fromPath('/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif')
-  .map { file -> tuple(file.basename,file) }
+  .map { file -> tuple(file.baseName, file) }
   .into { ome_story_ch; ome_view; ome_pyramid_ch }
 
 ome_view.view()
