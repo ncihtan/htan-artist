@@ -29,7 +29,7 @@ ome_view.view()
 
 process make_story{
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
-  publishDir 'params.outdir', saveAs: {filname > "$name/story.json"}
+  publishDir "$params.outdir", saveAs: {filname > "$name/story.json"}
   echo true
   input:
     set name, file(ome) from ome_story_ch
@@ -41,14 +41,14 @@ process make_story{
 }
 
 process render_pyramid{
-  publishDir '$params.outdir', saveAs: {filname > "$name/minerva-story"}
+  publishDir "$params.outdir", saveAs: {filname > "$name/minerva-story"}
   echo true
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
     set name, file(ome) from ome_pyramid_ch
     set story_name, file(story) from story_ch
   output:
-    file '*'
+    file 'minerva' into ch_final
 
     """
     python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
