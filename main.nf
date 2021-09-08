@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 Channel
-  .fromPath('home/ubuntu/miniature/data/*.ome.tif')
+  .fromPath('/home/ubuntu/miniature/data/*.ome.tif')
   .into { ome_story_ch; ome_pyramid_ch; ome_view }
 
 ome_view.view()
