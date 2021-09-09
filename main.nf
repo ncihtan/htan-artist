@@ -29,6 +29,7 @@ input_groups.other
 bf_view_ch.view { "$it is NOT an ometiff" }
 
 process make_ometiff{
+  errorStrategy 'finish'
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
     set name, file(input) from bf_convert_ch
@@ -48,6 +49,7 @@ ome_ch
   .into { ome_story_ch; ome_pyramid_ch }
 
 process make_story{
+  errorStrategy 'finish'
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
   echo true
@@ -61,6 +63,7 @@ process make_story{
 }
 
 process render_pyramid{
+  errorStrategy 'finish'
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
   echo true
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
