@@ -63,7 +63,7 @@ process render_miniature{
   echo true
   conda '/home/ubuntu/anaconda3/envs/miniature'
   when:
-    params.miniature = true
+    params.miniature == true
   input:
     set name, file(ome) from ome_miniature_ch
   output:
