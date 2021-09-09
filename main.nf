@@ -2,6 +2,8 @@
 
 params.outdir = '.'
 params.input = '/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif'
+params.miniature = false
+
 
 Channel
   .fromPath(params.input)
@@ -76,5 +78,23 @@ process render_pyramid{
     """
     python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
     cp $projectDir/resources/index.html minerva
+    """
+}
+
+process render_miniature{
+  errorStrategy 'ignore'
+  publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
+  echo true
+  conda '/home/ubuntu/anaconda3/envs/miniature'
+  when:
+    params.miniature == true
+  input:
+    set name, file(ome) from ome_miniature_ch
+  output:
+    file 'data/*'
+
+    """
+    mkdir data
+    python  $projectDir/miniature/docker/paint_miniature.py $ome 'miniature.png'
     """
 }
