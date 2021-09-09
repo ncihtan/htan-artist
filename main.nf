@@ -2,6 +2,7 @@
 
 params.outdir = '.'
 params.input = '/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif'
+params.miniature = false
 
 
 Channel
@@ -61,6 +62,8 @@ process render_miniature{
   publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
   echo true
   conda '/home/ubuntu/anaconda3/envs/miniature'
+  when:
+    params.miniature = true
   input:
     set name, file(ome) from ome_miniature_ch
   output:
