@@ -65,7 +65,7 @@ process make_story{
 }
 
 process render_pyramid{
-  errorStrategy 'ignore'
+  errorStrategy 'finish'
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
   echo true
 //  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
