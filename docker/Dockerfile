@@ -9,7 +9,8 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     vim-tiny \
     git \
     cmake \
-    build-essential
+    build-essential \
+    libopenslide-dev
 
 COPY requirements.txt ./
 
