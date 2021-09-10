@@ -64,14 +64,17 @@ process make_story{
   """
 }
 
+story_ch
+  .join(ome_pyramid_ch)
+  .set{story_ome_paired_ch}
+
 process render_pyramid{
   errorStrategy 'ignore'
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
   echo true
   conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
-    set name, file(ome) from ome_pyramid_ch
-    set story_name, file(story) from story_ch
+    set name, file(story) file(ome) from story_ome_paired_ch
   output:
     file '*'
 
