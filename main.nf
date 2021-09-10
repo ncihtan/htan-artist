@@ -51,7 +51,7 @@ ome_ch
   .into { ome_story_ch; ome_pyramid_ch; ome_miniature_ch }
 
 process make_story{
-  errorStrategy 'finish'
+  errorStrategy 'ignore'
 //  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
   echo true
