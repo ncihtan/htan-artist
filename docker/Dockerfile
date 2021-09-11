@@ -13,5 +13,9 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     libopenslide-dev
 
 COPY requirements.txt ./
+COPY minerva-author ./
+COPY auto-minerva ./
+COPY miniature ./
+COPY resources ./
 
 RUN pip install --no-cache-dir -r requirements.txt
