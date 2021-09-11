@@ -13,7 +13,8 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     libopenslide-dev \
     python3-dev \
     python3-pip \
-    libblosc1
+    libblosc1 \
+    unzip
 
 COPY requirements.txt ./
 
