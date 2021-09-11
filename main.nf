@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
-params.outdir = '.'
-params.input = '/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif'
+params.outdir = 'default-outdir'
+params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.miniature = false
 params.errorStrategy = 'ignore'
 
