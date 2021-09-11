@@ -61,7 +61,7 @@ process make_story{
   output:
     set name, file('story.json') into story_ch
   """
-  python $projectDir/auto-minerva/story.py $ome > 'story.json'
+  python auto-minerva/story.py $ome > 'story.json'
   """
 }
 
@@ -77,8 +77,8 @@ process render_pyramid{
     file '*'
 
     """
-    python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
-    cp $projectDir/resources/index.html minerva
+    python  minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
+    cp index.html minerva
     """
 }
 
@@ -96,6 +96,6 @@ process render_miniature{
 
     """
     mkdir data
-    python  $projectDir/miniature/docker/paint_miniature.py $ome 'miniature.png'
+    python miniature/docker/paint_miniature.py $ome 'miniature.png'
     """
 }
