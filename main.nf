@@ -3,6 +3,7 @@
 params.outdir = '.'
 params.input = '/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif'
 params.miniature = false
+params.errorStrategy = 'ignore'
 
 
 Channel
@@ -51,7 +52,7 @@ ome_ch
   .into { ome_story_ch; ome_pyramid_ch; ome_miniature_ch }
 
 process make_story{
-  errorStrategy 'ignore'
+  errorStrategy params.errorStrategy
 //  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
   echo true
@@ -65,7 +66,7 @@ process make_story{
 }
 
 process render_pyramid{
-  errorStrategy 'finish'
+  errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
   echo true
 //  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
@@ -82,7 +83,7 @@ process render_pyramid{
 }
 
 process render_miniature{
-  errorStrategy 'ignore'
+  errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
   echo true
 //  conda '/home/ubuntu/anaconda3/envs/miniature'
