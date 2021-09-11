@@ -78,7 +78,7 @@ process render_pyramid{
 
     """
     python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
-    cp index.html minerva
+    cp /index.html minerva
     """
 }
 
