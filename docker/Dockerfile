@@ -13,9 +13,9 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     libopenslide-dev
 
 COPY requirements.txt ./
-COPY ../minerva-author ./
-COPY ../auto-minerva ./
-COPY ../miniature ./
-COPY ../resources ./
 
 RUN pip install --no-cache-dir -r requirements.txt
+
+RUN git clone https://github.com/adamjtaylor/miniature.git
+RUN git clone https://github.com/jmuhlich/auto-minerva.git
+RUN git clone https://github.com/labsyspharm/minerva-author.git
