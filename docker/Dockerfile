@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     cmake \
     build-essential \
     libopenslide-dev \
+    python3-dev \
     python3-pip
 
 COPY requirements.txt ./
