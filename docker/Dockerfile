@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM debian:bullseye
 
 # File Author / Maintainer
 MAINTAINER Adam Taylor <adam.taylor@sagebase.org>
