@@ -32,7 +32,7 @@ input_groups.other
 bf_view_ch.view { "$it is NOT an ometiff" }
 
 process make_ometiff{
-  errorStrategy 'ignore'
+  errorStrategy params.errorStrategy
 //  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
     set name, file(input) from bf_convert_ch
