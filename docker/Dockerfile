@@ -18,9 +18,8 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
 
 COPY requirements.txt ./
 
-RUN pip install --no-cache-dir -r requirements.txt
-
-RUN git clone https://github.com/adamjtaylor/miniature.git && \
+RUN pip install --no-cache-dir -r requirements.txt && \
+  git clone https://github.com/adamjtaylor/miniature.git && \
     git clone https://github.com/jmuhlich/auto-minerva.git && \
     git clone https://github.com/labsyspharm/minerva-author.git && \
     wget https://gist.githubusercontent.com/adamjtaylor/964e206bf1e6f302f6e512082e953193/raw/0acdea0736a027a260a0bb598f619552ff106758/index.html && \
@@ -29,5 +28,6 @@ RUN git clone https://github.com/adamjtaylor/miniature.git && \
     wget https://github.com/glencoesoftware/raw2ometiff/releases/download/v0.3.0/raw2ometiff-0.3.0.zip && \
     unzip raw2ometiff-0.3.0.zip -d raw2ometiff && \
     echo 'export PATH="$PATH:/bioformats2raw"' >> ~/.bashrc && \
-    echo 'export PATH="$PATH:/raw2ometiff"' >> ~/.bashrc && \
-    source ~/.bashrc
+    echo 'export PATH="$PATH:/raw2ometiff"' >> ~/.bashrc
+
+RUN source ~/.bashrc
