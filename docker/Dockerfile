@@ -45,7 +45,7 @@ FROM debian:bullseye AS runtime
 # Copy /venv from the previous stage:
 COPY --from=build /venv /venv
 
-RUN source /venv/bin/activate
+RUN source /venv/bin/activate && \
     git clone https://github.com/adamjtaylor/miniature.git && \
     git clone https://github.com/jmuhlich/auto-minerva.git && \
     git clone https://github.com/labsyspharm/minerva-author.git && \
