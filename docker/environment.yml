@@ -27,6 +27,5 @@ dependencies:
   - bioformats2raw
   - raw2ometiff
   - opencv-python-headless
-  - openslide-python
   - ome-types
   - pip
