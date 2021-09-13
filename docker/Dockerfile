@@ -7,18 +7,6 @@ FROM continuumio/miniconda3 AS build
 # File Author / Maintainer
 MAINTAINER Adam Taylor <adam.taylor@sagebase.org>
 
-RUN apt-get update && apt-get install --yes --no-install-recommends \
-    wget \
-    locales \
-    vim-tiny \
-    git \
-    cmake \
-    build-essential \
-    libopenslide-dev \
-    python3-dev \
-    python3-pip \
-    libblosc1
-
 # Install the package as normal:
 COPY environment.yml .
 RUN conda env create -f environment.yml
@@ -49,6 +37,17 @@ SHELL ["/bin/bash", "-c"]
 
 
 RUN source /venv/bin/activate && \
+    apt-get update && apt-get install --yes --no-install-recommends \
+      wget \
+      locales \
+      vim-tiny \
+      git \
+      cmake \
+      build-essential \
+      libopenslide-dev \
+      python3-dev \
+      python3-pip \
+      libblosc1
     git clone https://github.com/adamjtaylor/miniature.git && \
     git clone https://github.com/jmuhlich/auto-minerva.git && \
     git clone https://github.com/labsyspharm/minerva-author.git && \
