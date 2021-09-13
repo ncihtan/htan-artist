@@ -52,7 +52,7 @@ RUN source /venv/bin/activate && \
     git clone https://github.com/adamjtaylor/miniature.git && \
     git clone https://github.com/jmuhlich/auto-minerva.git && \
     git clone https://github.com/labsyspharm/minerva-author.git && \
-    pip install git+https://github.com/labsyspharm/minerva-lib-python@master#egg=minerva-lib
+    pip install git+https://github.com/labsyspharm/minerva-lib-python@master#egg=minerva-lib && \
     pip install openslide-python
 
 ENV VIRTUAL_ENV=/venv
