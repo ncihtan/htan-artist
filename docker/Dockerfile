@@ -45,14 +45,14 @@ FROM debian:bullseye AS runtime
 # Copy /venv from the previous stage:
 COPY --from=build /venv /venv
 
-# When image is run, run the code with the environment
-# activated:
-SHELL ["/bin/bash", "-c"]
-ENTRYPOINT source /venv/bin/activate && \
-           python -c "import numpy; print('success!')"
-
 RUN conda activate artist && \
     git clone https://github.com/adamjtaylor/miniature.git && \
     git clone https://github.com/jmuhlich/auto-minerva.git && \
     git clone https://github.com/labsyspharm/minerva-author.git && \
     pip install git+https://github.com/labsyspharm/minerva-lib-python@master#egg=minerva-lib
+
+# When image is run, run the code with the environment
+# activated:
+SHELL ["/bin/bash", "-c"]
+ENTRYPOINT source /venv/bin/activate && \
+           python -c "import numpy; print('success!')"
