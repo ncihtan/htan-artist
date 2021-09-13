@@ -2,6 +2,7 @@ name: artist
 channels:
   - conda-forge
   - ome
+  - fastai
 dependencies:
   - numpy=1.19.4
   - pillow=8.1.1
@@ -25,9 +26,7 @@ dependencies:
   - h5py
   - bioformats2raw
   - raw2ometiff
+  - openslide-python
+  - ome-types
+  - opencv-python
   - pip
-  - pip:
-      - git+https://github.com/labsyspharm/minerva-lib-python@master#egg=minerva-lib
-      - openslide-python>=1.1.2
-      - ome-types>=0.2.4
-      - opencv-python
