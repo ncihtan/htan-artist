@@ -28,5 +28,4 @@ dependencies:
   - raw2ometiff
   - opencv-python-headless
   - ome-types
-  - opencv-python
   - pip
