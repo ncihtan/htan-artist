@@ -45,6 +45,9 @@ FROM debian:bullseye AS runtime
 # Copy /venv from the previous stage:
 COPY --from=build /venv /venv
 
+SHELL ["/bin/bash", "-c"]
+
+
 RUN source /venv/bin/activate && \
     git clone https://github.com/adamjtaylor/miniature.git && \
     git clone https://github.com/jmuhlich/auto-minerva.git && \
@@ -53,6 +56,5 @@ RUN source /venv/bin/activate && \
 
 # When image is run, run the code with the environment
 # activated:
-SHELL ["/bin/bash", "-c"]
 ENTRYPOINT source /venv/bin/activate && \
            python -c "import numpy; print('success!')"
