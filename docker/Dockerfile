@@ -35,7 +35,6 @@ COPY --from=build /venv /venv
 
 SHELL ["/bin/bash", "-c"]
 
-
 RUN source /venv/bin/activate && \
     apt-get update && apt-get install --yes --no-install-recommends \
       wget \
@@ -47,7 +46,7 @@ RUN source /venv/bin/activate && \
       libopenslide-dev \
       python3-dev \
       python3-pip \
-      libblosc1
+      libblosc1 \ &&
     git clone https://github.com/adamjtaylor/miniature.git && \
     git clone https://github.com/jmuhlich/auto-minerva.git && \
     git clone https://github.com/labsyspharm/minerva-author.git && \
