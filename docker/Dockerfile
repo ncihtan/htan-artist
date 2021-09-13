@@ -26,8 +26,7 @@ RUN pip install --no-cache-dir -r requirements.txt && \
     wget https://github.com/glencoesoftware/bioformats2raw/releases/download/v0.3.0/bioformats2raw-0.3.0.zip && \
     unzip bioformats2raw-0.3.0.zip -d bioformats2raw && \
     wget https://github.com/glencoesoftware/raw2ometiff/releases/download/v0.3.0/raw2ometiff-0.3.0.zip && \
-    unzip raw2ometiff-0.3.0.zip -d raw2ometiff && \
-    echo 'export PATH="$PATH:/bioformats2raw"' >> ~/.bashrc && \
-    echo 'export PATH="$PATH:/raw2ometiff"' >> ~/.bashrc
+    unzip raw2ometiff-0.3.0.zip -d raw2ometiff
 
-RUN source ~/.bashrc
+ENV PATH "$PATH:/bioformats2raw"
+ENV PATH "$PATH:/raw2ometiff"
