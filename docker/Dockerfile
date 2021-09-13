@@ -54,4 +54,5 @@ RUN source /venv/bin/activate && \
     git clone https://github.com/labsyspharm/minerva-author.git && \
     pip install git+https://github.com/labsyspharm/minerva-lib-python@master#egg=minerva-lib
 
-ENTRYPOINT ["source /venv/bin/activate"]
+ENV VIRTUAL_ENV=/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
