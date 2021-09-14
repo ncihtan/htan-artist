@@ -14,3 +14,7 @@ Example usage:
 ```
 nextflow run adamjtaylor/htan-artist --input <path-to-image> --outdir <output-directory>
 ```
+
+Example flow diagram:
+
+![image](https://user-images.githubusercontent.com/14945787/133272620-18223615-ce22-41c3-807b-3f3007b8f080.png)
