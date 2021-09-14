@@ -1,9 +1,0 @@
-[submodule "auto-minerva"]
-	path = auto-minerva
-	url = https://github.com/jmuhlich/auto-minerva.git
-[submodule "minerva-author"]
-	path = minerva-author
-	url = https://github.com/labsyspharm/minerva-author.git
-[submodule "miniature"]
-	path = miniature
-	url = https://github.com/adamjtaylor/miniature.git

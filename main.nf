@@ -1,8 +1,9 @@
 #!/usr/bin/env nextflow
 
-params.outdir = '.'
-params.input = '/home/ubuntu/htan-dcc-image-prep/test_data/*.ome.tif'
+params.outdir = 'default-outdir'
+params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.miniature = false
+params.errorStrategy = 'ignore'
 
 
 Channel
@@ -31,8 +32,8 @@ input_groups.other
 bf_view_ch.view { "$it is NOT an ometiff" }
 
 process make_ometiff{
-  errorStrategy 'ignore'
-  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
+  errorStrategy params.errorStrategy
+//  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
     set name, file(input) from bf_convert_ch
 
@@ -51,8 +52,8 @@ ome_ch
   .into { ome_story_ch; ome_pyramid_ch; ome_miniature_ch }
 
 process make_story{
-  errorStrategy 'ignore'
-  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
+  errorStrategy params.errorStrategy
+//  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
   echo true
   input:
@@ -60,15 +61,15 @@ process make_story{
   output:
     set name, file('story.json') into story_ch
   """
-  python $projectDir/auto-minerva/story.py $ome > 'story.json'
+  python3 /auto-minerva/story.py $ome > 'story.json'
   """
 }
 
 process render_pyramid{
-  errorStrategy 'ignore'
+  errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
   echo true
-  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
+//  conda '/home/ubuntu/anaconda3/envs/auto-minerva-author'
   input:
     set name, file(ome) from ome_pyramid_ch
     set story_name, file(story) from story_ch
@@ -76,25 +77,25 @@ process render_pyramid{
     file '*'
 
     """
-    python  $projectDir/minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
-    cp $projectDir/resources/index.html minerva
+    python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
+    cp /index.html minerva
     """
 }
 
 process render_miniature{
-  errorStrategy 'ignore'
+  errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
   echo true
-  conda '/home/ubuntu/anaconda3/envs/miniature'
+//  conda '/home/ubuntu/anaconda3/envs/miniature'
   when:
     params.miniature == true
   input:
     set name, file(ome) from ome_miniature_ch
   output:
-    file 'data/*'
+    file '*'
 
     """
     mkdir data
-    python  $projectDir/miniature/docker/paint_miniature.py $ome 'miniature.png'
+    python3 /miniature/docker/paint_miniature.py $ome 'miniature.png'
     """
 }
