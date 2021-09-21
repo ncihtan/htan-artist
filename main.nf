@@ -49,7 +49,7 @@ process make_ometiff{
 
 ome_ch
   .mix(converted_ch)
-  .into { ome_story_ch; ome_pyramid_ch; ome_miniature_ch }
+  .into { ome_story_ch; ome_pyramid_ch; ome_miniature_ch; ome_metadata_ch }
 
 process make_story{
   errorStrategy params.errorStrategy
@@ -98,4 +98,20 @@ process render_miniature{
     mkdir data
     python3 /miniature/docker/paint_miniature.py $ome 'miniature.png'
     """
+}
+
+process get_metadata{
+  publishDir "$params.outdir", saveAs: {filname -> "${name}.json"}
+  //errorStrategy 'ignore'
+  echo true
+  input:
+    set name, file(ome) from ome_metadata_ch
+  output:
+    file "*"
+  script:
+
+  """
+  python /image-header-validation/image-tags2json.py $ome > 'tags.json'
+  """
+
 }
