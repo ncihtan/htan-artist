@@ -101,7 +101,7 @@ process render_miniature{
 }
 
 process get_metadata{
-  publishDir "$params.outdir", saveAs: {filname -> "${name}.json"}
+   publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
   //errorStrategy 'ignore'
   echo true
   input:
