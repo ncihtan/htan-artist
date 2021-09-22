@@ -18,3 +18,13 @@ nextflow run adamjtaylor/htan-artist --input <path-to-image> --outdir <output-di
 Example flow diagram:
 
 ![image](https://user-images.githubusercontent.com/14945787/133272620-18223615-ce22-41c3-807b-3f3007b8f080.png)
+
+## Docker pointers
+
+### Test docker container
+
+`docker run -ti adamjtaylor/htan-artist`
+
+## Build docker container
+
+`docker build -t adamjtaylor/htan-artist docker/`
