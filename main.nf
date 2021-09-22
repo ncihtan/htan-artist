@@ -1,13 +1,13 @@
 #!/usr/bin/env nextflow
 
 params.outdir = 'default-outdir'
-params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
+// params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
 
 Channel
-    .fromPath(params.metadata)
+    .fromPath(params.manifest)
     .splitCsv(by: 1)
     .into {input_ch_ome; view_ch}
 
