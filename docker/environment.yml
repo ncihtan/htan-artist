@@ -1,0 +1,30 @@
+name: artist
+channels:
+  - conda-forge
+  - ome
+  - fastai
+dependencies:
+  - numpy
+  - Pillow
+  - flask
+  - waitress
+  - flask_cors
+  - matplotlib
+  - tifffile
+  - imagecodecs
+  - scikit-image
+  - pandas
+  - pooch
+  - zarr
+  - cython
+  - pyinstaller
+  - altair
+  - matplotlib
+  - umap-learn
+  - scikit-learn
+  - colormath
+  - h5py
+  - bioformats2raw
+  - raw2ometiff
+  - ome-types
+  - pip
