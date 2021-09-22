@@ -13,6 +13,7 @@ if (params.manifest) {
       .splitCsv(header:false, sep:'', strip:true)
       .map { it[0] }
       .unique()
+      .map { it -> file(it) }
       .into { input_ch_ome; view_ch }
 } else {
     exit 1, 'Input file with paths to S3 or GS bucket objects must be provided!'
