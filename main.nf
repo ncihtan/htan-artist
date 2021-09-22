@@ -7,10 +7,16 @@ params.errorStrategy = 'ignore'
 params.manifest = 'testmanifest.csv'
 
 
-Channel.fromPath(params.manifest)
-  .splitText()
-  .map { file(it) }
-  .into {input_ch_ome; view_ch}
+if (params.manifest) {
+  Channel
+      .from(file(params.manifest, checkIfExists: true))
+      .splitCsv(header:false, sep:'', strip:true)
+      .map { it[0] }
+      .unique()
+      .into { input_ch_ome; view_ch }
+} else {
+    exit 1, 'Input file with paths to S3 or GS bucket objects must be provided!'
+}
 
 view_ch.view()
 
