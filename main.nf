@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 
 params.outdir = 'default-outdir'
-// params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
+params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
@@ -14,9 +14,9 @@ Channel.fromPath(params.manifest)
   .map { file(it) }
   .into {input_ch_ome; view_ch}
 
-//Channel
-  //.fromPath(params.input)
-  //.into {input_ch_ome; view_ch}
+Channel
+  .fromPath(params.input)
+  .into {input_ch_ome; view_ch}
 
 view_ch.view()
 
