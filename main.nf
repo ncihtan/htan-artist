@@ -5,6 +5,9 @@ params.outdir = 'default-outdir'
 params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
+params.input = ''
+params.manifest = ''
+
 
 Channel
     .fromPath(params.manifest)
