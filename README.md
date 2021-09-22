@@ -9,13 +9,18 @@ A NextFlow piepline to run image rendering process to generate resources for the
 
 A Docker container ([adamjtaylor/htan-artist](https://hub.docker.com/repository/docker/adamjtaylor/htan-artist)) is used to ensure reproducibility.
 
-Example usage:
+## Example usage
 
 ```
 nextflow run adamjtaylor/htan-artist --input <path-to-image> --outdir <output-directory>
 ```
 
-Example flow diagram:
+## Options
+
+`--miniature` - Renders a thumbnail image using [Miniature](https://github.com/adamjtaylor/miniature)  
+`--metadata` - Extract tags from the image header and save to a json file
+
+## Example flow diagram:
 
 ![image](https://user-images.githubusercontent.com/14945787/133272620-18223615-ce22-41c3-807b-3f3007b8f080.png)
 
