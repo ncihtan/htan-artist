@@ -66,6 +66,7 @@ process make_story{
     set name, file(ome) from ome_story_ch
   output:
     set name, file('story.json') into story_ch
+  script:
   """
   python3 /auto-minerva/story.py $ome > 'story.json'
   """
@@ -83,11 +84,11 @@ process render_pyramid{
     set name, file(story), file(ome) from story_ome_paired_ch
   output:
     file '*'
-
-    """
-    python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
-    cp /index.html minerva
-    """
+  script:
+  """
+  python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
+  cp /index.html minerva
+  """
 }
 
 process render_miniature{
@@ -100,11 +101,11 @@ process render_miniature{
     set name, file(ome) from ome_miniature_ch
   output:
     file '*'
-
-    """
-    mkdir data
-    python3 /miniature/docker/paint_miniature.py $ome 'miniature.png'
-    """
+  script:
+  """
+  mkdir data
+  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png'
+  """
 }
 
 process get_metadata{
@@ -118,7 +119,6 @@ process get_metadata{
   output:
     file "*"
   script:
-
   """
   python /image-header-validation/image-tags2json.py $ome > 'tags.json'
   """
