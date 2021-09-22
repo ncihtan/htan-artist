@@ -3,7 +3,7 @@
 params.outdir = 'default-outdir'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.miniature = false
-params.metadata = true
+params.metadata = false
 params.errorStrategy = 'ignore'
 
 
@@ -66,14 +66,14 @@ process make_story{
 
 story_ch
   .join(ome_pyramid_ch)
-  .set{story_ome_paired_ch}
+  .set(story_ome_paired_ch)
 
 process render_pyramid{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
   echo true
   input:
-    set name, file(story) file(ome) from story_ome_paired_ch
+    set name, file(story), file(ome) from story_ome_paired_ch
   output:
     file '*'
 
