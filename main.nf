@@ -3,6 +3,7 @@
 params.outdir = 'default-outdir'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.miniature = false
+params.metadata = true
 params.errorStrategy = 'ignore'
 
 
@@ -48,7 +49,7 @@ process make_ometiff{
 
 ome_ch
   .mix(converted_ch)
-  .into { ome_story_ch; ome_pyramid_ch; ome_miniature_ch }
+  .into { ome_story_ch; ome_pyramid_ch; ome_miniature_ch; ome_metadata_ch }
 
 process make_story{
   errorStrategy params.errorStrategy
@@ -94,4 +95,22 @@ process render_miniature{
     mkdir data
     python3 /miniature/docker/paint_miniature.py $ome 'miniature.png'
     """
+}
+
+process get_metadata{
+   publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
+  //errorStrategy 'ignore'
+  echo true
+  when:
+    params.metadata == true
+  input:
+    set name, file(ome) from ome_metadata_ch
+  output:
+    file "*"
+  script:
+
+  """
+  python /image-header-validation/image-tags2json.py $ome > 'tags.json'
+  """
+
 }
