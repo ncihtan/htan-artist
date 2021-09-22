@@ -14,9 +14,9 @@ Channel
     .splitCsv(by: 1)
     .into {input_ch_ome; view_ch}
 
-Channel
-  .fromPath(params.input)
-  .into {input_ch_ome; view_ch}
+//Channel
+  //.fromPath(params.input)
+  //.into {input_ch_ome; view_ch}
 
 view_ch.view()
 
