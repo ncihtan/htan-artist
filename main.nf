@@ -66,7 +66,7 @@ process make_story{
 
 story_ch
   .join(ome_pyramid_ch)
-  .set(story_ome_paired_ch)
+  .set{story_ome_paired_ch}
 
 process render_pyramid{
   errorStrategy params.errorStrategy
