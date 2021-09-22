@@ -5,8 +5,7 @@ params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
-params.input = ''
-params.manifest = ''
+params.manifest = 'testmanifest.csv'
 
 
 Channel.fromPath(params.manifest)
