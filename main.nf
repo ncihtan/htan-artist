@@ -9,10 +9,10 @@ params.input = ''
 params.manifest = ''
 
 
-Channel
-    .fromPath(params.manifest)
-    .splitCsv(by: 1)
-    .into {input_ch_ome; view_ch}
+Channel.fromPath(params.manifest)
+  .splitText()
+  .map { file(it) }
+  .into {input_ch_ome; view_ch}
 
 //Channel
   //.fromPath(params.input)
