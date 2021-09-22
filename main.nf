@@ -6,12 +6,15 @@ params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
 
-
+Channel
+    .fromPath(params.metadata)
+    .splitCsv(by: 1)
+    .into {input_ch_ome; view_ch}
 
 Channel
   .fromPath(params.input)
-  .into {input_ch_ome; input_ch_notome; view_ch}
-  
+  .into {input_ch_ome; view_ch}
+
 view_ch.view()
 
 input_ch_ome
