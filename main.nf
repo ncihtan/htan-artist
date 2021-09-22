@@ -3,6 +3,7 @@
 params.outdir = 'default-outdir'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.miniature = false
+params.metadata = true
 params.errorStrategy = 'ignore'
 
 
@@ -104,6 +105,8 @@ process get_metadata{
    publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
   //errorStrategy 'ignore'
   echo true
+  when:
+    params.metadata == true
   input:
     set name, file(ome) from ome_metadata_ch
   output:
