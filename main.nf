@@ -6,7 +6,7 @@ params.metadata = false
 params.errorStrategy = 'ignore'
 params.manifest = 'testmanifest.csv'
 params.sample = 5
-echo = false
+params.echo = false
 
 
 if (params.manifest) {
