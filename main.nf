@@ -115,7 +115,7 @@ process render_miniature{
   script:
   """
   mkdir data
-  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png'
+  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png' --remove_bg False
   """
 }
 
