@@ -1,12 +1,14 @@
 #!/usr/bin/env nextflow
 
 params.outdir = 'default-outdir'
+params.minerva = false
 params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
 params.manifest = 'testmanifest.csv'
 // params.sample = 5
 params.echo = false
+
 
 
 if (params.manifest) {
@@ -67,6 +69,8 @@ process make_story{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
   echo params.echo
+  when:
+    params.minerva == true
   input:
     set name, file(ome) from ome_story_ch
   output:
@@ -85,6 +89,8 @@ process render_pyramid{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
   echo params.echo
+   when:
+    params.minerva == true
   input:
     set name, file(story), file(ome) from story_ome_paired_ch
   output:
