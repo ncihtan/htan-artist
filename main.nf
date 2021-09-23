@@ -6,6 +6,7 @@ params.metadata = false
 params.errorStrategy = 'ignore'
 params.manifest = 'testmanifest.csv'
 params.sample = 5
+echo = false
 
 
 if (params.manifest) {
@@ -21,7 +22,7 @@ if (params.manifest) {
     exit 1, 'Input file with paths to S3 or GS bucket objects must be provided!'
 }
 
-view_ch.view()
+if (params.echo) { view_ch.view() }
 
 input_ch_ome
   .branch {
@@ -34,16 +35,17 @@ input_groups.ome
   .map { file -> tuple(file.simpleName, file) }
   .into {ome_ch; ome_view_ch}
 
-ome_view_ch.view { "$it is an ometiff" }
+if (params.echo) {  ome_view_ch.view { "$it is an ometiff" } }
 
 input_groups.other
   .map { file -> tuple(file.simpleName, file) }
   .into {bf_convert_ch; bf_view_ch}
 
-bf_view_ch.view { "$it is NOT an ometiff" }
+if (params.echo) {  bf_view_ch.view { "$it is NOT an ometiff" } }
 
 process make_ometiff{
   errorStrategy params.errorStrategy
+  echo params.echo
   input:
     set name, file(input) from bf_convert_ch
 
@@ -64,7 +66,7 @@ ome_ch
 process make_story{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
-  echo true
+  echo params.echo
   input:
     set name, file(ome) from ome_story_ch
   output:
@@ -82,7 +84,7 @@ story_ch
 process render_pyramid{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
-  echo true
+  echo params.echo
   input:
     set name, file(story), file(ome) from story_ome_paired_ch
   output:
@@ -97,7 +99,7 @@ process render_pyramid{
 process render_miniature{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
-  echo true
+  echo params.echo
   when:
     params.miniature == true
   input:
@@ -112,9 +114,9 @@ process render_miniature{
 }
 
 process get_metadata{
-   publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
-  //errorStrategy 'ignore'
-  echo true
+  publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
+  errorStrategy params.errorStrategy
+  echo params.echo
   when:
     params.metadata == true
   input:
