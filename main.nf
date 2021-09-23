@@ -5,7 +5,7 @@ params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
 params.manifest = 'testmanifest.csv'
-params.sample = 5
+// params.sample = 5
 params.echo = false
 
 
@@ -16,7 +16,7 @@ if (params.manifest) {
       .map { it[0] }
       .unique()
       .map { it -> file(it) }
-      .randomSample(params.sample)
+      //.randomSample(params.sample)
       .into { input_ch_ome; view_ch }
 } else {
     exit 1, 'Input file with paths to S3 or GS bucket objects must be provided!'
