@@ -5,15 +5,14 @@ params.minerva = false
 params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
-params.manifest = 'testmanifest.csv'
+params.manifest = false
+params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 // params.sample = 5
 params.echo = false
 
-
-
-if (params.manifest) {
+if (params.input =~ /.+\.csv$/) {
   Channel
-      .from(file(params.manifest, checkIfExists: true))
+      .from(file(params.input, checkIfExists: true))
       .splitCsv(header:false, sep:'', strip:true)
       .map { it[0] }
       .unique()
@@ -21,7 +20,9 @@ if (params.manifest) {
       //.randomSample(params.sample)
       .into { input_ch_ome; view_ch }
 } else {
-    exit 1, 'Input file with paths to S3 or GS bucket objects must be provided!'
+   Channel
+  .fromPath(params.input)
+  .into {input_ch_ome; input_ch_notome; view_ch}
 }
 
 if (params.echo) { view_ch.view() }
