@@ -5,10 +5,13 @@ params.all = false
 params.minerva = false
 params.miniature = false
 params.metadata = false
+params.he = false
 params.errorStrategy = 'ignore'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.echo = false
 params.keepBg = false
+
+heStory = 'https://gist.githubusercontent.com/adamjtaylor/3494d806563d71c34c3ab45d75794dde/raw/d72e922bc8be3298ebe8717ad2b95eef26e0837b/unscaled.story.json'
 
 if(params.keepBg == false) { 
   remove_bg = true
@@ -82,9 +85,14 @@ process make_story{
   output:
     set name, file('story.json') into story_ch
   script:
-  """
-  python3 /auto-minerva/story.py $ome > 'story.json'
-  """
+  if(params.he == true)
+    """
+    wget -O story.json $heStory
+    """
+  else
+    """
+    python3 /auto-minerva/story.py $ome > 'story.json'
+    """
 }
 
 story_ch
