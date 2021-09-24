@@ -67,7 +67,7 @@ ome_ch
 
 process make_story{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}, mode: "move"
+  publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
@@ -87,7 +87,7 @@ story_ch
 
 process render_pyramid{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}, mode: "move"
+  publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
@@ -104,7 +104,7 @@ process render_pyramid{
 
 process render_miniature{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}, mode: "move"
+  publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
   echo params.echo
   when:
     params.miniature == true || params.all == true
@@ -120,7 +120,7 @@ process render_miniature{
 }
 
 process get_metadata{
-  publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}, mode: "move"
+  publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
   errorStrategy params.errorStrategy
   echo params.echo
   when:
