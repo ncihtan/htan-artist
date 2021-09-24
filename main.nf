@@ -11,7 +11,7 @@ params.echo = false
 params.keepBg = false
 
 if(params.keepBg == false) { 
-  remove_bg == true
+  remove_bg = true
 } else {
   remove_bg = false
 }
