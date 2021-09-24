@@ -1,12 +1,20 @@
 #!/usr/bin/env nextflow
 
 params.outdir = 'default-outdir'
+params.all = false
 params.minerva = false
 params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.echo = false
+params.keepBg = false
+
+if(params.keepBg == false) { 
+  remove_bg = true
+} else {
+  remove_bg = false
+}
 
 if (params.input =~ /.+\.csv$/) {
   Channel
@@ -113,7 +121,7 @@ process render_miniature{
   script:
   """
   mkdir data
-  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png' --remove_bg False
+  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png' --remove_bg $remove_bg
   """
 }
 
