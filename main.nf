@@ -1,12 +1,14 @@
 #!/usr/bin/env nextflow
 
 params.outdir = 'default-outdir'
+params.all = false
 params.minerva = false
 params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.echo = false
+params.miniature_remove_bg = false
 
 if (params.input =~ /.+\.csv$/) {
   Channel
@@ -65,7 +67,7 @@ ome_ch
 
 process make_story{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
+  publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}, mode: "move"
   echo params.echo
   when:
     params.minerva == true || params.all == true
@@ -85,7 +87,7 @@ story_ch
 
 process render_pyramid{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
+  publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}, mode: "move"
   echo params.echo
    when:
     params.minerva == true || params.all == true
@@ -102,7 +104,7 @@ process render_pyramid{
 
 process render_miniature{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
+  publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}, mode: "move"
   echo params.echo
   when:
     params.miniature == true || params.all == true
@@ -113,12 +115,12 @@ process render_miniature{
   script:
   """
   mkdir data
-  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png' --remove_bg False
+  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png' --remove_bg $params.miniature_remove_bg
   """
 }
 
 process get_metadata{
-  publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
+  publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}, mode: "move"
   errorStrategy params.errorStrategy
   echo params.echo
   when:
