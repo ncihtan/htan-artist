@@ -8,9 +8,9 @@ params.metadata = false
 params.errorStrategy = 'ignore'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.echo = false
-params.miniature-keep-background = false
+params.keepBg = false
 
-if(params.miniature-keep-background == false) { 
+if(params.keepBg == false) { 
   remove_bg == true
 } else {
   remove_bg = false
