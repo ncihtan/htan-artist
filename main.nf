@@ -68,7 +68,7 @@ process make_story{
   publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
   echo params.echo
   when:
-    params.minerva == true
+    params.minerva == true || params.all == true
   input:
     set name, file(ome) from ome_story_ch
   output:
@@ -88,7 +88,7 @@ process render_pyramid{
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
   echo params.echo
    when:
-    params.minerva == true
+    params.minerva == true || params.all == true
   input:
     set name, file(story), file(ome) from story_ome_paired_ch
   output:
@@ -105,7 +105,7 @@ process render_miniature{
   publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
   echo params.echo
   when:
-    params.miniature == true
+    params.miniature == true || params.all == true
   input:
     set name, file(ome) from ome_miniature_ch
   output:
@@ -122,7 +122,7 @@ process get_metadata{
   errorStrategy params.errorStrategy
   echo params.echo
   when:
-    params.metadata == true
+    params.metadata == true || params.all == true
   input:
     set name, file(ome) from ome_metadata_ch
   output:
