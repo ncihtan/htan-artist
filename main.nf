@@ -1,18 +1,28 @@
 #!/usr/bin/env nextflow
 
 params.outdir = 'default-outdir'
-params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
+params.minerva = false
 params.miniature = false
 params.metadata = false
 params.errorStrategy = 'ignore'
+params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
+params.echo = false
 
+if (params.input =~ /.+\.csv$/) {
+  Channel
+      .from(file(params.input, checkIfExists: true))
+      .splitCsv(header:false, sep:'', strip:true)
+      .map { it[0] }
+      .unique()
+      .map { it -> file(it) }
+      .into { input_ch_ome; view_ch }
+} else {
+    Channel
+    .fromPath(params.input)
+    .into {input_ch_ome; input_ch_notome; view_ch}
+}
 
-
-Channel
-  .fromPath(params.input)
-  .into {input_ch_ome; input_ch_notome; view_ch}
-  
-view_ch.view()
+if (params.echo) { view_ch.view() }
 
 input_ch_ome
   .branch {
@@ -25,16 +35,17 @@ input_groups.ome
   .map { file -> tuple(file.simpleName, file) }
   .into {ome_ch; ome_view_ch}
 
-ome_view_ch.view { "$it is an ometiff" }
+if (params.echo) {  ome_view_ch.view { "$it is an ometiff" } }
 
 input_groups.other
   .map { file -> tuple(file.simpleName, file) }
   .into {bf_convert_ch; bf_view_ch}
 
-bf_view_ch.view { "$it is NOT an ometiff" }
+if (params.echo) {  bf_view_ch.view { "$it is NOT an ometiff" } }
 
 process make_ometiff{
   errorStrategy params.errorStrategy
+  echo params.echo
   input:
     set name, file(input) from bf_convert_ch
 
@@ -55,11 +66,14 @@ ome_ch
 process make_story{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
-  echo true
+  echo params.echo
+  when:
+    params.minerva == true
   input:
     set name, file(ome) from ome_story_ch
   output:
     set name, file('story.json') into story_ch
+  script:
   """
   python3 /auto-minerva/story.py $ome > 'story.json'
   """
@@ -72,39 +86,41 @@ story_ch
 process render_pyramid{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
-  echo true
+  echo params.echo
+   when:
+    params.minerva == true
   input:
     set name, file(story), file(ome) from story_ome_paired_ch
   output:
     file '*'
-
-    """
-    python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
-    cp /index.html minerva
-    """
+  script:
+  """
+  python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
+  cp /index.html minerva
+  """
 }
 
 process render_miniature{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
-  echo true
+  echo params.echo
   when:
     params.miniature == true
   input:
     set name, file(ome) from ome_miniature_ch
   output:
     file '*'
-
-    """
-    mkdir data
-    python3 /miniature/docker/paint_miniature.py $ome 'miniature.png'
-    """
+  script:
+  """
+  mkdir data
+  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png' --remove_bg False
+  """
 }
 
 process get_metadata{
-   publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
-  //errorStrategy 'ignore'
-  echo true
+  publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
+  errorStrategy params.errorStrategy
+  echo params.echo
   when:
     params.metadata == true
   input:
@@ -112,7 +128,6 @@ process get_metadata{
   output:
     file "*"
   script:
-
   """
   python /image-header-validation/image-tags2json.py $ome > 'tags.json'
   """

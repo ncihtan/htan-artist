@@ -47,7 +47,6 @@ RUN apt-get update && apt-get install --yes --no-install-recommends \
     python3-pip \
     libblosc1
 
-
 RUN source /venv/bin/activate && \
     git clone https://github.com/adamjtaylor/miniature.git && \
     git clone https://github.com/jmuhlich/auto-minerva.git && \
