@@ -8,7 +8,13 @@ params.metadata = false
 params.errorStrategy = 'ignore'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.echo = false
-params.miniature_remove_bg = false
+params.miniature-keep-background = false
+
+if(params.miniature-keep-background == false) { 
+  remove_bg == true
+} else {
+  remove_bg = false
+}
 
 if (params.input =~ /.+\.csv$/) {
   Channel
@@ -115,7 +121,7 @@ process render_miniature{
   script:
   """
   mkdir data
-  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png' --remove_bg $params.miniature_remove_bg
+  python3 /miniature/docker/paint_miniature.py $ome 'miniature.png' --remove_bg $remove_bg
   """
 }
 
