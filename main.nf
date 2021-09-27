@@ -1,6 +1,6 @@
 #!/usr/bin/env nextflow
 
-params.outdir = 'default-outdir'
+params.outdir = '.'
 params.all = false
 params.minerva = false
 params.miniature = false
@@ -80,7 +80,7 @@ ome_ch
 
 process make_story{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filename -> "$name/story.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "story/${name}.story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
@@ -109,7 +109,7 @@ story_ch
 
 process render_pyramid{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filename -> "$name/minerva/"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva/$name/"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
@@ -131,7 +131,7 @@ process render_pyramid{
 
 process render_miniature{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filename -> "$name/miniature.png"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails/${name}.png"}
   echo params.echo
   when:
     params.miniature == true || params.all == true
@@ -152,7 +152,7 @@ process render_miniature{
 }
 
 process get_metadata{
-  publishDir "$params.outdir", saveAs: {filename -> "$name/tifftags.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags/${name}.json"}
   errorStrategy params.errorStrategy
   echo params.echo
   when:
