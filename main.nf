@@ -62,7 +62,11 @@ process make_ometiff{
 
   output:
     set name, file("${name}.ome.tiff") into converted_ch
-
+  stub:
+  """
+  touch raw_dir
+  touch "${name}.ome.tiff"
+  """
   script:
   """
   bioformats2raw $input 'raw_dir'
@@ -84,6 +88,10 @@ process make_story{
     set name, file(ome) from ome_story_ch
   output:
     set name, file('story.json') into story_ch
+  stub:
+  """
+  touch story.json
+  """
   script:
   if(params.he == true)
     """
@@ -109,6 +117,11 @@ process render_pyramid{
     set name, file(story), file(ome) from story_ome_paired_ch
   output:
     file '*'
+  stub:
+  """
+  mkdir minerva
+  touch minerva/index.html
+  """
   script:
   """
   python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
@@ -148,6 +161,10 @@ process get_metadata{
     set name, file(ome) from ome_metadata_ch
   output:
     file "*"
+  stub:
+  """
+  touch tags.json
+  """
   script:
   """
   python /image-header-validation/image-tags2json.py $ome > 'tags.json'
