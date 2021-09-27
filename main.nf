@@ -118,7 +118,7 @@ process render_pyramid{
 
 process render_miniature{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name/miniature.png"}
+  publishDir "$params.outdir", saveAs: {filname -> "$name"}
   echo params.echo
   when:
     params.miniature == true || params.all == true
@@ -126,6 +126,11 @@ process render_miniature{
     set name, file(ome) from ome_miniature_ch
   output:
     file '*'
+  stub:
+  """
+  mkdir data
+  touch data/miniature.png
+  """
   script:
   """
   mkdir data
