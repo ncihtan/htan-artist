@@ -80,7 +80,7 @@ ome_ch
 
 process make_story{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name/story.json"}
+  publishDir "$params.outdir", saveAs: {filename -> "$name/story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
@@ -109,14 +109,14 @@ story_ch
 
 process render_pyramid{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name/minerva-story"}
+  publishDir "$params.outdir", saveAs: {filename -> "$name/minerva/"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
   input:
     set name, file(story), file(ome) from story_ome_paired_ch
   output:
-    file '*'
+    file 'minerva'
   stub:
   """
   mkdir minerva
@@ -131,14 +131,14 @@ process render_pyramid{
 
 process render_miniature{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir", saveAs: {filname -> "$name"}
+  publishDir "$params.outdir", saveAs: {filename -> "$name/miniature.png"}
   echo params.echo
   when:
     params.miniature == true || params.all == true
   input:
     set name, file(ome) from ome_miniature_ch
   output:
-    file '*'
+    file 'data/miniature.png'
   stub:
   """
   mkdir data
@@ -152,7 +152,7 @@ process render_miniature{
 }
 
 process get_metadata{
-  publishDir "$params.outdir", saveAs: {filname -> "$name/metadata.json"}
+  publishDir "$params.outdir", saveAs: {filename -> "$name/tifftags.json"}
   errorStrategy params.errorStrategy
   echo params.echo
   when:
@@ -160,14 +160,14 @@ process get_metadata{
   input:
     set name, file(ome) from ome_metadata_ch
   output:
-    file "*"
+    file "tifftags.json"
   stub:
   """
-  touch tags.json
+  touch tifftags.json
   """
   script:
   """
-  python /image-header-validation/image-tags2json.py $ome > 'tags.json'
+  python /image-header-validation/image-tags2json.py $ome > "tifftags.json"
   """
 
 }
