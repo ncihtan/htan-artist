@@ -83,7 +83,7 @@ process make_ometiff{
 
 ome_ch
   .mix(converted_ch)
-  .into { ome_story_ch; ome_pyramid_ch; ome_miniature_ch; ome_metadata_ch }
+  .into { ome_story_ch; ome_miniature_ch; ome_metadata_ch }
 
 process make_story{
   errorStrategy params.errorStrategy
@@ -94,7 +94,7 @@ process make_story{
   input:
     set parent, name, file(ome) from ome_story_ch
   output:
-    set parent, name, file('story.json') into story_ch
+    set parent, name, file('story.json'), file(ome) into ome_pyramid_ch
   stub:
   """
   touch story.json
@@ -110,10 +110,6 @@ process make_story{
     """
 }
 
-story_ch
-  .join(ome_pyramid_ch)
-  .set{story_ome_paired_ch}
-
 process render_pyramid{
   errorStrategy params.errorStrategy
   publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva_stories/$bucket$parent/$name/"}
@@ -121,7 +117,7 @@ process render_pyramid{
    when:
     params.minerva == true || params.all == true
   input:
-    set parent, name, file(story), file(ome) from story_ome_paired_ch
+    set parent, name, file(story), file(ome) from ome_pyramid_ch
   output:
     file 'minerva'
   stub:
