@@ -87,7 +87,7 @@ ome_ch
 
 process make_story{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "story/$bucket$parent/${name}.story.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "auto_minerva_story_jsons/$bucket$parent/${name}.story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
@@ -116,7 +116,7 @@ story_ch
 
 process render_pyramid{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva/$bucket$parent/$name/"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva_stories/$bucket$parent/$name/"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
