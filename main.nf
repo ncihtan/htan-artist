@@ -88,7 +88,7 @@ ome_ch
 
 process make_story{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "auto_minerva_story_jsons/$bucket$parent/${name}.story.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "auto_minerva_story_jsons$bucket$parent${name}.story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
@@ -113,7 +113,7 @@ process make_story{
 
 process render_pyramid{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva_stories/$bucket$parent/$name/"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva_stories$bucket$parent$name/"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
@@ -135,7 +135,7 @@ process render_pyramid{
 
 process render_miniature{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails/$bucket$parent/${name}.png"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails$bucket$parent${name}.png"}
   echo params.echo
   when:
     params.miniature == true || params.all == true
@@ -156,7 +156,7 @@ process render_miniature{
 }
 
 process get_metadata{
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags/$bucket$parent/${name}.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags$bucket$parent${name}.json"}
   errorStrategy params.errorStrategy
   echo params.echo
   when:
