@@ -10,6 +10,7 @@ params.errorStrategy = 'ignore'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.echo = false
 params.keepBg = false
+params.bucket = false
 
 heStory = 'https://gist.githubusercontent.com/adamjtaylor/3494d806563d71c34c3ab45d75794dde/raw/d72e922bc8be3298ebe8717ad2b95eef26e0837b/unscaled.story.json'
 
@@ -17,6 +18,12 @@ if(params.keepBg == false) {
   remove_bg = true
 } else {
   remove_bg = false
+}
+
+if(params.bucket == false){
+  bucket = ""
+} else {
+  bucket = "$params.bucket/"
 }
 
 if (params.input =~ /.+\.csv$/) {
@@ -43,13 +50,13 @@ input_ch_ome
     .set { input_groups }
 
 input_groups.ome
-  .map { file -> tuple(file.simpleName, file) }
+  .map { file -> tuple(file.parent, file.simpleName, file) }
   .into {ome_ch; ome_view_ch}
 
 if (params.echo) {  ome_view_ch.view { "$it is an ometiff" } }
 
 input_groups.other
-  .map { file -> tuple(file.simpleName, file) }
+  .map { file -> tuple(file.parent, file.simpleName, file) }
   .into {bf_convert_ch; bf_view_ch}
 
 if (params.echo) {  bf_view_ch.view { "$it is NOT an ometiff" } }
@@ -58,10 +65,10 @@ process make_ometiff{
   errorStrategy params.errorStrategy
   echo params.echo
   input:
-    set name, file(input) from bf_convert_ch
+    set parent, name, file(input) from bf_convert_ch
 
   output:
-    set name, file("${name}.ome.tiff") into converted_ch
+    set parent, name, file("${name}.ome.tiff") into converted_ch
   stub:
   """
   touch raw_dir
@@ -80,14 +87,14 @@ ome_ch
 
 process make_story{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "story/${name}.story.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "story/$bucket$parent/${name}.story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
   input:
-    set name, file(ome) from ome_story_ch
+    set parent, name, file(ome) from ome_story_ch
   output:
-    set name, file('story.json') into story_ch
+    set parent, name, file('story.json') into story_ch
   stub:
   """
   touch story.json
@@ -109,12 +116,12 @@ story_ch
 
 process render_pyramid{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva/$name/"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva/$bucket$parent/$name/"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
   input:
-    set name, file(story), file(ome) from story_ome_paired_ch
+    set parent, name, file(story), file(ome) from story_ome_paired_ch
   output:
     file 'minerva'
   stub:
@@ -131,12 +138,12 @@ process render_pyramid{
 
 process render_miniature{
   errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails/${name}.png"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails/$bucket$parent/${name}.png"}
   echo params.echo
   when:
     params.miniature == true || params.all == true
   input:
-    set name, file(ome) from ome_miniature_ch
+    set parent, name, file(ome) from ome_miniature_ch
   output:
     file 'data/miniature.png'
   stub:
@@ -152,13 +159,13 @@ process render_miniature{
 }
 
 process get_metadata{
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags/${name}.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags/$bucket$parent/${name}.json"}
   errorStrategy params.errorStrategy
   echo params.echo
   when:
     params.metadata == true || params.all == true
   input:
-    set name, file(ome) from ome_metadata_ch
+    set parent, name, file(ome) from ome_metadata_ch
   output:
     file "tifftags.json"
   stub:
