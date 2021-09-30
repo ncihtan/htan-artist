@@ -12,6 +12,7 @@ params.echo = false
 params.keepBg = false
 params.bucket = false
 params.level = -1
+params.bioformats2ometiff = true
 
 heStory = 'https://gist.githubusercontent.com/adamjtaylor/3494d806563d71c34c3ab45d75794dde/raw/d72e922bc8be3298ebe8717ad2b95eef26e0837b/unscaled.story.json'
 
@@ -45,7 +46,7 @@ if (params.echo) { view_ch.view() }
 
 input_ch_ome
   .branch {
-      ome: it =~ /.+\.ome\.tif{1,2}$/
+      ome: it =~ /.+\.ome\.tif{1,2}$/ || params.bioformats2ometiff == true
       other: true
     }
     .set { input_groups }
