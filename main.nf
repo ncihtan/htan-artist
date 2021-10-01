@@ -46,7 +46,7 @@ if (params.echo) { view_ch.view() }
 
 input_ch_ome
   .branch {
-      ome: it =~ /.+\.ome\.tif{1,2}$/ || params.bioformats2ometiff == true
+      ome: it =~ /.+\.ome\.tif{1,2}$/ || params.bioformats2ometiff == false
       other: true
     }
     .set { input_groups }
