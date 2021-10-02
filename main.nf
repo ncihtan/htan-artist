@@ -64,6 +64,7 @@ input_groups.other
 if (params.echo) {  bf_view_ch.view { "$it is NOT an ometiff" } }
 
 process make_ometiff{
+  label "process_medium"
   errorStrategy params.errorStrategy
   echo params.echo
   input:
@@ -88,6 +89,7 @@ ome_ch
   .into { ome_story_ch; ome_miniature_ch; ome_metadata_ch }
 
 process make_story{
+  label "process_medium"
   errorStrategy params.errorStrategy
   publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "auto_minerva_story_jsons$bucket$parent${name}.story.json"}
   echo params.echo
@@ -113,6 +115,7 @@ process make_story{
 }
 
 process render_pyramid{
+  label "process_medium"
   errorStrategy params.errorStrategy
   publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva_stories$bucket$parent$name/"}
   echo params.echo
@@ -135,6 +138,7 @@ process render_pyramid{
 }
 
 process render_miniature{
+  label "process_high"
   errorStrategy params.errorStrategy
   publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails$bucket$parent${name}.png"}
   echo params.echo
@@ -157,6 +161,7 @@ process render_miniature{
 }
 
 process get_metadata{
+  label "process_low"
   publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags$bucket$parent${name}.json"}
   errorStrategy params.errorStrategy
   echo params.echo
