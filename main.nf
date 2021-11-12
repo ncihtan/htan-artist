@@ -15,6 +15,7 @@ params.level = -1
 params.bioformats2ometiff = true
 
 heStory = 'https://gist.githubusercontent.com/adamjtaylor/3494d806563d71c34c3ab45d75794dde/raw/d72e922bc8be3298ebe8717ad2b95eef26e0837b/unscaled.story.json'
+heScript = 'https://gist.githubusercontent.com/adamjtaylor/bbadf5aa4beef9aa1d1a50d76e2c5bec/raw/1f6e79ab94419e27988777343fa2c345a18c5b1b/fix_he_exhibit.py'
 
 if(params.keepBg == false) { 
   remove_bg = true
@@ -129,11 +130,20 @@ process render_pyramid{
   """
   mkdir minerva
   touch minerva/index.html
+  touch minerva/exhibit.json
   """
   script:
-  """
-  python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
-  cp /index.html minerva
+  if(params.he = true)
+    """
+    python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
+    cp /index.html minerva
+    wget -O fix_he_exhibit.py $heScript
+    python3 fix_he_exhibit.py minerva/exhibit.json
+    """
+  else
+    """
+    python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
+    cp /index.html minerva
   """
 }
 
