@@ -13,6 +13,7 @@ params.keepBg = false
 params.bucket = false
 params.level = -1
 params.bioformats2ometiff = true
+params.synapse = false
 
 heStory = 'https://gist.githubusercontent.com/adamjtaylor/3494d806563d71c34c3ab45d75794dde/raw/d72e922bc8be3298ebe8717ad2b95eef26e0837b/unscaled.story.json'
 heScript = 'https://gist.githubusercontent.com/adamjtaylor/bbadf5aa4beef9aa1d1a50d76e2c5bec/raw/1f6e79ab94419e27988777343fa2c345a18c5b1b/fix_he_exhibit.py'
@@ -40,10 +41,24 @@ if (params.input =~ /.+\.csv$/) {
 } else {
     Channel
     .fromPath(params.input)
-    .into {input_ch_ome; input_ch_notome; view_ch}
+    .into {input_ch_ome; view_ch}
 }
 
 if (params.echo) { view_ch.view() }
+
+process synapse_get {
+  when: params.synapse
+  input:
+    val from input_ch_ome2
+    file synapseconfig from file(params.synapseconfig)
+  output:
+    file '*' into input_ch_ome
+  script:
+    """
+    echo "synapse -c $synapseconfig get $synid"
+    synapse -c $synapseconfig get $synid
+    """
+}
 
 input_ch_ome
   .branch {
