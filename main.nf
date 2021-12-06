@@ -35,12 +35,7 @@ if (params.input =~ /.+\.csv$/) {
       .splitCsv(header:false, sep:'', strip:true)
       .map { it[0] }
       .unique()
-      .map { it -> file(it) }
       .into { input_ch; view_ch }
-} else if (params.synapseconfig) {
-  Channel
-    .from(params.input)
-    .into {input_ch; view_ch}
 } else {
     Channel
     .fromPath(params.input)
@@ -52,7 +47,9 @@ if (params.echo) { view_ch.view() }
 if (params.synapseconfig) {
   input_ch.set{synapse_ch}
 } else {
-  input_ch.set{file_ch}
+  input_ch
+    .map { it -> file(it) }
+    .set{file_ch}
 }
 
 process synapse_get {
