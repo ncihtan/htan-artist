@@ -6,7 +6,6 @@ params.minerva = false
 params.miniature = false
 params.metadata = false
 params.he = false
-params.errorStrategy = 'ignore'
 params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
 params.echo = false
 params.keepBg = false
@@ -93,7 +92,6 @@ if (params.echo) {  bf_view_ch.view { "$it is NOT an ometiff" } }
 
 process make_ometiff{
   label "process_medium"
-  errorStrategy params.errorStrategy
   echo params.echo
   input:
     set parent, name, file(input) from bf_convert_ch
@@ -118,8 +116,7 @@ ome_ch
 
 process make_story{
   label "process_medium"
-  errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "auto_minerva_story_jsons$bucket$parent${name}.story.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "auto_minerva_story_jsons/$bucket/$parent/${name}.story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
@@ -144,8 +141,7 @@ process make_story{
 
 process render_pyramid{
   label "process_medium"
-  errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva_stories$bucket$parent$name/"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva_stories/$bucket/$parent/${name}/"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
@@ -176,8 +172,7 @@ process render_pyramid{
 
 process render_miniature{
   label "process_high"
-  errorStrategy params.errorStrategy
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails$bucket$parent${name}.png"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails/$bucket/$parent/${name}.png"}
   echo params.echo
   when:
     params.miniature == true || params.all == true
@@ -199,8 +194,7 @@ process render_miniature{
 
 process get_metadata{
   label "process_low"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags$bucket$parent${name}.json"}
-  errorStrategy params.errorStrategy
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags/$bucket/$parent/${name}.json"}
   echo params.echo
   when:
     params.metadata == true || params.all == true
