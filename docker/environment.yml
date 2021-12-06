@@ -29,4 +29,3 @@ dependencies:
   - raw2ometiff
   - ome-types
   - pip
-  - synapseclient
