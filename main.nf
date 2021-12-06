@@ -48,23 +48,36 @@ if (params.input =~ /.+\.csv$/) {
 
 if (params.echo) { view_ch.view() }
 
-if (params.synapseconfig) {
-  input_ch.set{synapse_ch}
-} else {
-  input_ch
-    .map { it -> file(it) }
+input_ch
+  .branch {
+      syn: it =~ /^syn\d{8}/
+      other: true
+    }
+    .set { input_ch_groups }
+
+input_ch_groups.syn
+//  .map { file -> tuple(file.parent, file.simpleName, file) }
+  .into {synapse_ch; synapse_ch2}
+
+input_ch_groups.other
+    .map { it -> tuple(it.simpleName, file(it)) }
     .set{file_ch}
-}
 
 process synapse_get {
-  label "process_medium"
+  label "process_low"
   errorStrategy params.errorStrategy
   echo params.echo
+  when:
+    params.synapseconfig != false
   input:
     val synid from synapse_ch
-    file synapseconfig from file(params.synapseconfig)
+    file synapseconfig from params.synapseconfig
   output:
-    file '*' into file_ch
+    set synid, file('*') into syn_out
+  stub:
+  """
+  touch "${synid}.ome.tiff"
+  """
   script:
     """
     echo "synapse -c $synapseconfig get $synid"
@@ -72,15 +85,37 @@ process synapse_get {
     """
 }
 
+process get_annotations {
+  label "process_low"
+  errorStrategy params.errorStrategy
+  echo params.echo
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/annotations.json"}
+  input:
+    val synid from synapse_ch2
+    file synapseconfig from params.synapseconfig
+  output:
+    file 'annotations.json'
+  stub:
+  """
+  touch "annotations.json"
+  """
+  script:
+    """
+    echo "synapse -c $synapseconfig get-annotations --id $synid"
+    synapse -c $synapseconfig get-annotations --id $synid > annotations.json
+    """
+}
+
 file_ch
+   .mix(syn_out)
   .branch {
-      ome: it =~ /.+\.ome\.tif{1,2}$/ || params.bioformats2ometiff == false
+      ome: it[1] =~ /.+\.ome\.tif{1,2}$/ || params.bioformats2ometiff == false
       other: true
     }
     .set { input_groups }
 
 input_groups.ome
-  .map { file -> tuple(file.parent, file.simpleName, file) }
+//  .map { file -> tuple(file.parent, file.simpleName, file) }
   .into {ome_ch; ome_view_ch}
 
 if (params.echo) {  ome_view_ch.view { "$it is an ometiff" } }
@@ -95,19 +130,18 @@ process make_ometiff{
   label "process_medium"
   echo params.echo
   input:
-    set parent, name, file(input) from bf_convert_ch
-
+    set synid, file(input) from bf_convert_ch
   output:
-    set parent, name, file("${name}.ome.tiff") into converted_ch
+    set synid, file("${input.simpleName}.ome.tiff") into converted_ch
   stub:
   """
   touch raw_dir
-  touch "${name}.ome.tiff"
+  touch "test.ome.tiff"
   """
   script:
   """
   bioformats2raw $input 'raw_dir'
-  raw2ometiff 'raw_dir' "${name}.ome.tiff"
+  raw2ometiff 'raw_dir' "${input.simpleName}.ome.tiff"
   """
 }
 
@@ -117,14 +151,14 @@ ome_ch
 
 process make_story{
   label "process_medium"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "auto_minerva_story_jsons/$bucket/$parent/${name}.story.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/minerva/story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
   input:
-    set parent, name, file(ome) from ome_story_ch
+    set synid, file(ome) from ome_story_ch
   output:
-    set parent, name, file('story.json'), file(ome) into ome_pyramid_ch
+    set synid, file('story.json'), file(ome) into ome_pyramid_ch
   stub:
   """
   touch story.json
@@ -142,12 +176,12 @@ process make_story{
 
 process render_pyramid{
   label "process_medium"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva_stories/$bucket/$parent/${name}/"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}}/minerva/"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
   input:
-    set parent, name, file(story), file(ome) from ome_pyramid_ch
+    set synid, file(story), file(ome) from ome_pyramid_ch
   output:
     file 'minerva'
   stub:
@@ -173,12 +207,12 @@ process render_pyramid{
 
 process render_miniature{
   label "process_high"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails/$bucket/$parent/${name}.png"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/thumbnail.png"}
   echo params.echo
   when:
     params.miniature == true || params.all == true
   input:
-    set parent, name, file(ome) from ome_miniature_ch
+    set synid, file(ome) from ome_miniature_ch
   output:
     file 'data/miniature.png'
   stub:
@@ -195,12 +229,12 @@ process render_miniature{
 
 process get_metadata{
   label "process_low"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags/$bucket/$parent/${name}.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/headers.json"}
   echo params.echo
   when:
     params.metadata == true || params.all == true
   input:
-    set parent, name, file(ome) from ome_metadata_ch
+    set synid, file(ome) from ome_metadata_ch
   output:
     file "tifftags.json"
   stub:
