@@ -13,7 +13,7 @@ params.keepBg = false
 params.bucket = false
 params.level = -1
 params.bioformats2ometiff = true
-params.synapse = false
+params.synapseconfig = false
 
 heStory = 'https://gist.githubusercontent.com/adamjtaylor/3494d806563d71c34c3ab45d75794dde/raw/d72e922bc8be3298ebe8717ad2b95eef26e0837b/unscaled.story.json'
 heScript = 'https://gist.githubusercontent.com/adamjtaylor/bbadf5aa4beef9aa1d1a50d76e2c5bec/raw/1f6e79ab94419e27988777343fa2c345a18c5b1b/fix_he_exhibit.py'
@@ -37,22 +37,34 @@ if (params.input =~ /.+\.csv$/) {
       .map { it[0] }
       .unique()
       .map { it -> file(it) }
-      .into { input_ch_ome; view_ch }
+      .into { input_ch; view_ch }
+} else if (params.synapseconfig) {
+  Channel
+    .from(params.input)
+    .into {input_ch; view_ch}
 } else {
     Channel
     .fromPath(params.input)
-    .into {input_ch_ome; view_ch}
+    .into {input_ch; view_ch}
 }
 
 if (params.echo) { view_ch.view() }
 
+if (params.synapseconfig) {
+  input_ch.set{synapse_ch}
+} else {
+  input_ch.set{file_ch}
+}
+
 process synapse_get {
-  when: params.synapse
+  label "process_medium"
+  errorStrategy params.errorStrategy
+  echo params.echo
   input:
-    val from input_ch_ome2
+    val synid from synapse_ch
     file synapseconfig from file(params.synapseconfig)
   output:
-    file '*' into input_ch_ome
+    file '*' into file_ch
   script:
     """
     echo "synapse -c $synapseconfig get $synid"
@@ -60,7 +72,7 @@ process synapse_get {
     """
 }
 
-input_ch_ome
+file_ch
   .branch {
       ome: it =~ /.+\.ome\.tif{1,2}$/ || params.bioformats2ometiff == false
       other: true
