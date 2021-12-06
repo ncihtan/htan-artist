@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - ome
   - fastai
+  - bioconda
 dependencies:
   - numpy
   - Pillow
@@ -28,3 +29,4 @@ dependencies:
   - raw2ometiff
   - ome-types
   - pip
+  - synapseclient
