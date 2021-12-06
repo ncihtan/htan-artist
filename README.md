@@ -5,14 +5,17 @@ A NextFlow piepline to run image rendering process to generate resources for the
 - Converts bioformats files into OME-TIFF
 - Generates a `story.json` file using [Auto-Minerva](https://github.com/jmuhlich/auto-minerva)
 - Renders a Minerva story using [Minerva Author](https://github.com/labsyspharm/minerva-author)
+- If the `--all` parameter is set, renders a thumbnail, an autominerva story and gets the metadata
 - If the `--miniature` parameter is set, renders a thumbnail image using [Miniature](https://github.com/adamjtaylor/miniature)
+- `--he` assumes the channel is a brighfield microscopy image of H&E stained tissue and uses a fixed, unscaled `story.json` and a custom color legend
+- `--input` can be the path to an image (with `*` wildcards) or a csv manifest of cloud storage uris (one per line).
 
 A Docker container ([adamjtaylor/htan-artist](https://hub.docker.com/repository/docker/adamjtaylor/htan-artist)) is used to ensure reproducibility.
 
 ## Example usage
 
 ```
-nextflow run adamjtaylor/htan-artist --input <path-to-image> --outdir <output-directory>
+nextflow run adamjtaylor/htan-artist --input <path-to-image> --outdir <output-directory> --all
 ```
 
 ## Options
