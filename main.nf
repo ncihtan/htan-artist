@@ -36,6 +36,10 @@ if (params.input =~ /.+\.csv$/) {
       .map { it[0] }
       .unique()
       .into { input_ch; view_ch }
+} else if (params.synapseconfig) {
+    Channel
+    .of(params.input)
+    .into {input_ch; view_ch}
 } else {
     Channel
     .fromPath(params.input)
