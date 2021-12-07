@@ -20,6 +20,7 @@ params.watch_file = false
 
 heStory = 'https://gist.githubusercontent.com/adamjtaylor/3494d806563d71c34c3ab45d75794dde/raw/d72e922bc8be3298ebe8717ad2b95eef26e0837b/unscaled.story.json'
 heScript = 'https://gist.githubusercontent.com/adamjtaylor/bbadf5aa4beef9aa1d1a50d76e2c5bec/raw/1f6e79ab94419e27988777343fa2c345a18c5b1b/fix_he_exhibit.py'
+minerva_description_script = 'https://gist.githubusercontent.com/adamjtaylor/e51873a801fee39f1f1efa978e2b5e44/raw/d5e836463ed9ff8510f087d1509d6a5395d1da26/inject_description.py'
 
 if (params.synapseconfig!= false){
   synapseconfig = file(params.synapseconfig)
@@ -115,7 +116,7 @@ process synapse_get {
     set synid, file('*') into syn_out
   stub:
   """
-  touch "${synid}.ome.tiff"
+  touch "test.tif"
   """
   script:
     """
@@ -213,12 +214,13 @@ process make_story{
 
 process render_pyramid{
   label "process_medium"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}}/$workflow.runName/minerva/"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/$workflow.runName/minerva/"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
   input:
     set synid, file(story), file(ome) from ome_pyramid_ch
+    file synapseconfig from synapseconfig
   output:
     file 'minerva'
   stub:
@@ -228,17 +230,21 @@ process render_pyramid{
   touch minerva/exhibit.json
   """
   script:
-  if(params.he = true)
+  if(params.he == true)
     """
     python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
     cp /index.html minerva
     wget -O fix_he_exhibit.py $heScript
     python3 fix_he_exhibit.py minerva/exhibit.json
+    wget -O inject_description.py $minerva_description_script
+    python3 inject_description.py minerva/exhibit.json -synid$synid --synapseconfig $synapseconfig
     """
   else
     """
     python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
     cp /index.html minerva
+    wget -O inject_description.py $minerva_description_script
+    python3 inject_description.py minerva/exhibit.json --synid $synid --output minerva/exhibit.json --synapseconfig $synapseconfig
   """
 }
 
