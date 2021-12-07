@@ -15,13 +15,27 @@ A Docker container ([adamjtaylor/htan-artist](https://hub.docker.com/repository/
 ## Example usage
 
 ```
-nextflow run adamjtaylor/htan-artist --input <path-to-image> --outdir <output-directory> --all
+nextflow run adamjtaylor/htan-artist --input_path <path-to-image> --outdir <output-directory> --all
 ```
 
 ## Options
 
-`--miniature` - Renders a thumbnail image using [Miniature](https://github.com/adamjtaylor/miniature)  
-`--metadata` - Extract tags from the image header and save to a json file
+`--outdir` - output directory. Default: `.`
+`--minerva`: Renders an [Auto-Minerva](https://github.com/jmuhlich/auto-minerva) story
+`--miniature` - Renders a thumbnail image using [Miniature](https://github.com/adamjtaylor/miniature) 
+`--metadata` -  Extract headers from the image and save as a json
+`--all` - set `--minerva` `--miniature` and `--metadata` 
+`--he` - Use an unscaled scene for Minerva story and thumbnail generation. Suitable for H&E images
+`--input_csv` - Path to a csv with a file path, uid, or synapseID per row
+`--input_synid` - A synapse ID
+`--input_path` - The path to a file. Can take wildcards
+`--watch_path` - A path to watch for files that are created or modified
+`--watch_csv` - A path to a csv to watch for if it is modified
+`--echo` - Echo outputs
+`--keepBg` - Keep the background in thumbnails
+`--level` - the pyramid level used in thumbnauls, Default: `-1` (highest)
+`--bioformats2ometiff` - Convert images to ome-tiff. Default: `true`
+`--synapseconfig` - Path to a synapseConfig file. Required for Synapse authentication
 
 ## Example flow diagram:
 
