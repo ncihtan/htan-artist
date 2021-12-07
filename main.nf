@@ -13,6 +13,7 @@ params.bucket = false
 params.level = -1
 params.bioformats2ometiff = true
 params.synapseconfig = false
+params.watch_path = false
 
 heStory = 'https://gist.githubusercontent.com/adamjtaylor/3494d806563d71c34c3ab45d75794dde/raw/d72e922bc8be3298ebe8717ad2b95eef26e0837b/unscaled.story.json'
 heScript = 'https://gist.githubusercontent.com/adamjtaylor/bbadf5aa4beef9aa1d1a50d76e2c5bec/raw/1f6e79ab94419e27988777343fa2c345a18c5b1b/fix_he_exhibit.py'
@@ -46,9 +47,18 @@ if (params.input =~ /.+\.csv$/) {
     .into {input_ch; view_ch}
 }
 
+if (params.watch_file =~ /.+\.csv$/) {
+  Channel
+      .watchPath(params.watch_path, 'create,modify')
+      .splitCsv(header:false, sep:'', strip:true)
+      .map { it[0] }
+      .unique()
+      .into { watch_ch }
+
 if (params.echo) { view_ch.view() }
 
 input_ch
+  .mix(watch_ch)
   .branch {
       syn: it =~ /^syn\d{8}/
       other: true
