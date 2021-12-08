@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - ome
   - fastai
+  - bioconda
 dependencies:
   - numpy
   - Pillow
