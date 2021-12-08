@@ -6,16 +6,25 @@ params.minerva = false
 params.miniature = false
 params.metadata = false
 params.he = false
-params.input = 's3://htan-imaging-example-datasets/HTA9_1_BA_L_ROI04.ome.tif'
+params.input_csv = false
+params.input_synid = false
+params.input_path = false
+params.watch_path = false
+params.watch_csv = false
 params.echo = false
 params.keepBg = false
-params.bucket = false
 params.level = -1
 params.bioformats2ometiff = true
 params.synapseconfig = false
+params.watch_file = false
 
 heStory = 'https://gist.githubusercontent.com/adamjtaylor/3494d806563d71c34c3ab45d75794dde/raw/d72e922bc8be3298ebe8717ad2b95eef26e0837b/unscaled.story.json'
 heScript = 'https://gist.githubusercontent.com/adamjtaylor/bbadf5aa4beef9aa1d1a50d76e2c5bec/raw/1f6e79ab94419e27988777343fa2c345a18c5b1b/fix_he_exhibit.py'
+minerva_description_script = 'https://gist.githubusercontent.com/adamjtaylor/e51873a801fee39f1f1efa978e2b5e44/raw/c03d0e09ec58e4c391f5ce4ca4183abca790f2a2/inject_description.py'
+
+if (params.synapseconfig!= false){
+  synapseconfig = file(params.synapseconfig)
+}
 
 if(params.keepBg == false) { 
   remove_bg = true
@@ -23,48 +32,92 @@ if(params.keepBg == false) {
   remove_bg = false
 }
 
-if(params.bucket == false){
-  bucket = ""
+  // Make a channel for inputing a csv which splits into rows - this could by synids, or paths
+if (params.input_csv != false) {
+    Channel
+        .from(file(params.input_csv, checkIfExists: true))
+        .splitCsv(header:false, sep:'', strip:true)
+        .map { it[0] }
+        .unique()
+        .set { input_csv }
+  } else {
+    Channel.empty().set{input_csv}
+  }
+
+
+// A channel to take a single imput synid
+if (params.input_synid != false) {
+    Channel
+        .of(params.input_synid)
+        .set {input_synid}
 } else {
-  bucket = "$params.bucket/"
+    Channel.empty().set{input_synid}
 }
 
-if (params.input =~ /.+\.csv$/) {
-  Channel
-      .from(file(params.input, checkIfExists: true))
-      .splitCsv(header:false, sep:'', strip:true)
-      .map { it[0] }
-      .unique()
-      .into { input_ch; view_ch }
-} else if (params.synapseconfig) {
+// Channel taking a single input_path (works with wildcards)
+if (params.input_path != false) {
     Channel
-    .of(params.input)
-    .into {input_ch; view_ch}
+        .fromPath(params.input_path)
+        .set {input_path}
 } else {
-    Channel
-    .fromPath(params.input)
-    .into {input_ch; view_ch}
+    Channel.empty().set{input_path}
 }
 
-if (params.echo) { view_ch.view() }
-
-if (params.synapseconfig) {
-  input_ch.set{synapse_ch}
+if (params.watch_csv != false) {
+    Channel
+        .watchPath(params.watch_csv, 'create,modify')
+        .splitCsv(header:false, sep:'', strip:true)
+        .map { it[0] }
+        .unique()
+        .set {watch_csv}
 } else {
-  input_ch
+    Channel.empty().set{watch_csv}
+}
+
+if (params.watch_path != false) {
+    Channel
+        .watchPath(params.watch_path)
+        .set {watch_path}
+} else {
+    Channel.empty().set{watch_path}
+}
+
+// Mix the csv inputs and split into those that are synids and those that are ne not
+input_csv 
+    .mix( watch_csv)
+    .branch {
+        syn: it =~ /^syn\d{8}/
+        other: true
+    }
+    .set { input_csv_branch }
+
+// Mix the synids
+input_synid
+    .mix(input_csv_branch.syn)
+    .into {synids_toget; synids_togetannotations}
+
+// Mix the files
+input_csv_branch.other
     .map { it -> file(it) }
-    .set{file_ch}
-}
+    .mix( input_path, watch_path )
+    .map { it -> tuple(it.simpleName, it)}
+    .set {files}
+
 
 process synapse_get {
-  label "process_medium"
-  errorStrategy params.errorStrategy
+  label "process_low"
   echo params.echo
+  when:
+    params.synapseconfig != false
   input:
-    val synid from synapse_ch
-    file synapseconfig from file(params.synapseconfig)
+    val synid from synids_toget
+    file synapseconfig from synapseconfig
   output:
-    file '*' into file_ch
+    set synid, file('*') into syn_out
+  stub:
+  """
+  touch "test.tif"
+  """
   script:
     """
     echo "synapse -c $synapseconfig get $synid"
@@ -72,21 +125,41 @@ process synapse_get {
     """
 }
 
-file_ch
+process get_annotations {
+  label "process_low"
+  echo params.echo
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/$workflow.runName/annotations.json"}
+  input:
+    val synid from synids_togetannotations
+    file synapseconfig from synapseconfig
+  output:
+    file 'annotations.json'
+  stub:
+  """
+  touch "annotations.json"
+  """
+  script:
+    """
+    echo "synapse -c $synapseconfig get-annotations --id $synid"
+    synapse -c $synapseconfig get-annotations --id $synid > annotations.json
+    """
+}
+
+files
+  .mix(syn_out)
   .branch {
-      ome: it =~ /.+\.ome\.tif{1,2}$/ || params.bioformats2ometiff == false
+      ome: it[1] =~ /.+\.ome\.tif{1,2}$/ || params.bioformats2ometiff == false
       other: true
     }
     .set { input_groups }
 
 input_groups.ome
-  .map { file -> tuple(file.parent, file.simpleName, file) }
+//  .map { file -> tuple(file.parent, file.simpleName, file) }
   .into {ome_ch; ome_view_ch}
 
 if (params.echo) {  ome_view_ch.view { "$it is an ometiff" } }
 
 input_groups.other
-  .map { file -> tuple(file.parent, file.simpleName, file) }
   .into {bf_convert_ch; bf_view_ch}
 
 if (params.echo) {  bf_view_ch.view { "$it is NOT an ometiff" } }
@@ -95,19 +168,18 @@ process make_ometiff{
   label "process_medium"
   echo params.echo
   input:
-    set parent, name, file(input) from bf_convert_ch
-
+    set synid, file(input) from bf_convert_ch
   output:
-    set parent, name, file("${name}.ome.tiff") into converted_ch
+    set synid, file("${input.simpleName}.ome.tiff") into converted_ch
   stub:
   """
   touch raw_dir
-  touch "${name}.ome.tiff"
+  touch "test.ome.tiff"
   """
   script:
   """
   bioformats2raw $input 'raw_dir'
-  raw2ometiff 'raw_dir' "${name}.ome.tiff"
+  raw2ometiff 'raw_dir' "${input.simpleName}.ome.tiff"
   """
 }
 
@@ -117,14 +189,14 @@ ome_ch
 
 process make_story{
   label "process_medium"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "auto_minerva_story_jsons/$bucket/$parent/${name}.story.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/$workflow.runName/minerva/story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
   input:
-    set parent, name, file(ome) from ome_story_ch
+    set synid, file(ome) from ome_story_ch
   output:
-    set parent, name, file('story.json'), file(ome) into ome_pyramid_ch
+    set synid, file('story.json'), file(ome) into ome_pyramid_ch
   stub:
   """
   touch story.json
@@ -142,12 +214,13 @@ process make_story{
 
 process render_pyramid{
   label "process_medium"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "minerva_stories/$bucket/$parent/${name}/"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/$workflow.runName/minerva/"}
   echo params.echo
    when:
     params.minerva == true || params.all == true
   input:
-    set parent, name, file(story), file(ome) from ome_pyramid_ch
+    set synid, file(story), file(ome) from ome_pyramid_ch
+    file synapseconfig from synapseconfig
   output:
     file 'minerva'
   stub:
@@ -157,28 +230,32 @@ process render_pyramid{
   touch minerva/exhibit.json
   """
   script:
-  if(params.he = true)
+  if(params.he == true)
     """
     python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
     cp /index.html minerva
     wget -O fix_he_exhibit.py $heScript
     python3 fix_he_exhibit.py minerva/exhibit.json
+    wget -O inject_description.py $minerva_description_script
+    python3 inject_description.py minerva/exhibit.json -synid$synid --synapseconfig $synapseconfig
     """
   else
     """
     python3  /minerva-author/src/save_exhibit_pyramid.py $ome $story 'minerva'
     cp /index.html minerva
+    wget -O inject_description.py $minerva_description_script
+    python3 inject_description.py minerva/exhibit.json --synid $synid --output minerva/exhibit.json --synapseconfig $synapseconfig
   """
 }
 
 process render_miniature{
   label "process_high"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "thumbnails/$bucket/$parent/${name}.png"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/$workflow.runName/thumbnail.png"}
   echo params.echo
   when:
     params.miniature == true || params.all == true
   input:
-    set parent, name, file(ome) from ome_miniature_ch
+    set synid, file(ome) from ome_miniature_ch
   output:
     file 'data/miniature.png'
   stub:
@@ -195,12 +272,12 @@ process render_miniature{
 
 process get_metadata{
   label "process_low"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "tifftags/$bucket/$parent/${name}.json"}
+  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/$workflow.runName/headers.json"}
   echo params.echo
   when:
     params.metadata == true || params.all == true
   input:
-    set parent, name, file(ome) from ome_metadata_ch
+    set synid, file(ome) from ome_metadata_ch
   output:
     file "tifftags.json"
   stub:
