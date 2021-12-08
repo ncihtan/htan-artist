@@ -189,7 +189,7 @@ ome_ch
 
 process make_story{
   label "process_medium"
-  publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/$workflow.runName/minerva/story.json"}
+  //publishDir "$params.outdir/$workflow.runName", saveAs: {filename -> "${synid}/$workflow.runName/minerva/story.json"}
   echo params.echo
   when:
     params.minerva == true || params.all == true
